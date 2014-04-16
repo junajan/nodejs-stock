@@ -1,0 +1,57 @@
+<div class="modal-header">
+    <h3>Seznam vlastněných akcií pro {{ info.name }}</h3>
+</div>
+<div class="modal-body">
+	
+    <div class="box-body">
+        <table id="myStocks_table" class="table table-bordered">
+            <tbody><tr>
+                <th>#</th>
+                <th>Jednotka</th>
+                <th>Nákupní cena</th>
+                <th>Množství</th>
+                <th>Výnos</th>
+                <th>Datum nákupu</th>
+            </tr>
+            <tr ng-repeat="(i, item) in info.data">
+                <td>{{ $index + 1 }}</td>
+                <td title="{{ item.name }}">{{ item.code }}</td>
+                <td>{{ item.price | currency:"$" }}$</td>
+                <td>{{ item.amount }}</td>
+                <td ng-class="(info.actualPrice - item.price  < 0) ? 'red' : 'green'">
+                	{{ info.actualPrice * item.amount - item.price * item.amount | currency: "$" }}
+                </td>
+                <td>{{ item.date | date:'yyyy-MM-dd HH:mm:ss' }}</td>
+            </tr>
+        </tbody></table>
+    </div><!-- /.box-body -->
+    <h4>Sumarizace</h4>
+    <div class="box-body">
+        <table id="myStocks_table" class="table table-bordered">
+            <tbody>
+        	<tr>
+                <th>Aktuální cena</th>
+                <th>Nákupní cena</th>
+                <th>Množství</th>
+                <th>Cena celkem</th>
+                <th>Výnos</th>
+            </tr>
+            <tr>
+                <td>{{ info.actualPrice | currency:"$" }}</td>
+                <td>{{ info.price / info.priceCount | currency:"$" }}</td>
+                <td>{{ info.amount }}</td>
+                <td>{{ info.price | currency:"$" }}</td>
+                <td ng-class="(info.actualPrice  - info.price / info.priceCount < 0) ? 'red' : 'green'">
+                	{{ (info.actualPrice * info.amount - info.price / info.priceCount * info.amount) | currency:"$" }}
+                </td>
+            </tr>
+       		</tbody>
+    	</table>
+    </div><!-- /.box-body -->
+    
+</div>
+<div class="modal-footer">
+    <button class="btn btn-warning" ng-click="close()">Zavřít</button>
+</div>
+
+

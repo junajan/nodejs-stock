@@ -1,0 +1,121 @@
+body {
+  padding: 50px;
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+a {
+  color: #00B7FF;
+}
+
+#all {
+	max-width: 1024px;
+	margin: auto;
+}
+
+#content {
+	width: 880px;
+	margin: 0 auto;
+	padding: 10px;
+}
+
+.detail_info {
+	
+	width: 500px;
+}
+
+.detail_info  td:nth-child(2n-1) {
+	font-weight: bold;
+}
+
+.legend table {
+	border-spacing: 5px;
+}
+
+.orderBook tr:first-child th:nth-child(1),
+.orderBook tr *:nth-child(4) {
+	border-right: 2px solid black;	
+}
+
+.orderBookRealtime td:nth-child(5) {
+	
+	font-weight: bold;
+}
+
+.orderBookFinal tr:first-child th:nth-child(1),
+.orderBookFinal tr *:nth-child(3) {
+	border-right: 2px solid black;	
+}
+
+.orderSum .max {
+	font-weight: bold;
+}
+
+.orderSum .minImbalance {
+	color: red;
+}
+
+.presetData {
+	margin-left: 10px;
+}
+
+.fright {
+	float: right;
+}
+
+.clear {
+
+	clear: both;
+}
+
+legend span {
+	cursor: pointer;
+	float: right;
+}
+
+
+/* Fix for Bootstrap 3 with Angular UI Bootstrap */
+
+.modal { 
+	display: block;
+}
+
+/* Custom dialog/modal headers */
+
+.dialog-header-error { background-color: #d2322d; }
+.dialog-header-wait { background-color: #428bca; }
+.dialog-header-notify { background-color: #eeeeee; }
+.dialog-header-confirm { background-color: #333333; }
+	.dialog-header-error span, .dialog-header-error h4,
+	.dialog-header-wait span, .dialog-header-wait h4,
+	.dialog-header-confirm span, .dialog-header-confirm h4 { color: #ffffff; }
+
+/* Ease Display */
+
+.pad { padding: 25px; }
+
+.invis {
+	display: none;
+}
+
+.center {
+	text-align: center;
+}
+
+.link {
+	cursor: pointer;
+}
+
+.text-red {
+	color: red;
+}
+
+.text-green {
+	color: green;
+}
+
+
+.orderBookRealtime tr td:nth-child(5),
+.orderBookRealtime tr th:nth-child(5) {
+
+	border-left: 1px solid #DDDDDD;
+}

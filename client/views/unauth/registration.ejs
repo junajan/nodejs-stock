@@ -1,0 +1,57 @@
+<div class="form-box" id="login-box">
+    <div class="header">Registrace nového uživatele</div>
+    <form action="<%= brokerConf.url+":"+brokerConf.port+"/client-rest/registration" %>" method="post" class="ajaxForm">
+
+        <div class="body bg-gray">
+            <div class="form-group">
+                <input type="text" name="name" class="form-control" placeholder="Jméno"/>
+            </div>
+            <div class="form-group">
+                <input type="text" name="email" class="form-control" placeholder="Email"/>
+            </div>
+            <div class="form-group">
+                <input type="password" name="password" value="" class="form-control" placeholder="Heslo"/>
+            </div>
+            <div class="form-group">
+                <input type="password" name="password2" value="" class="form-control" placeholder="Heslo znovu"/>
+            </div>
+        </div>
+        <div class="footer"> 
+            <div class="inner">                   
+                <button type="submit" class="btn bg-olive btn-block">Registrovat!</button>
+                <a href="/login" class="text-center">Zpět na stránku s přihlášením</a>
+            </div>
+
+            <div class="callout callout-success success-message" style="display: none;">
+                <h4>Registrace byla úspěšná</h4>
+                <p>Nyní se můžete <a href="/login">přihlásit</a>.</p>
+            </div>
+
+        </div>
+    </form>
+
+    <script type="text/javascript">
+
+        $(document).ready( function () {
+
+            $(".ajaxForm").ajaxForm ( {
+                dataType:  'json', 
+                success: function ( res ) {
+                    hideErrors( ".ajaxForm" );
+
+                    if ( res.error ) {
+
+                        showErrors ( ".ajaxForm", res.error );
+                    } else {
+
+                        $(".ajaxForm .body").slideUp();
+                        $(".ajaxForm .inner").fadeOut();
+                        $(".success-message").fadeIn();
+                    }
+                }
+            });
+        });
+
+    </script>
+</div>
+

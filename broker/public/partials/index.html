@@ -1,0 +1,71 @@
+
+<h3>Základní informace</h3>
+<div class="detail_info">
+    <table class="table able-condensed table-bordered table-striped">
+        <tbody>
+            <tr>
+                <td class="col-md-2">Název:</td>
+                <td class="col-md-2">{{ data.config.broker_name }}</td>
+                <td class="col-md-2">Port:</td>
+                <td class="col-md-2">{{ data.config.port }}</td>
+            </tr>
+            <tr>
+                <td>Doba startu:</td>
+                <td>{{ data.startTime | date:'yyyy-MM-dd HH:mm:ss.sss' }}</td>
+                <td>Uptime:</td>
+                <td>{{ data.startTime | dateDiffFromNow }}</td>
+            </tr>
+            <tr>
+            	<td>Množství vlastněných akcií:</td>
+            	<td>{{ data.ownedStockCount }}</td>
+            	<td>Množství nevyřízených příkazů:</td>
+            	<td>{{ data.pendingOrdersCount }}</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<br />
+<h3>Burzovní údaje</h3>
+<div class="detail_info">
+    <table class="table table-bordered table-striped">
+        <tbody>
+            <tr>
+				<td class="span1">Market:</td>
+				<td class="col-md-2">{{ data.config.market.addr }}:{{ data.config.market.port }}</td>
+				<td class="col-md-3">Spojení:</td>
+				<td class="text-{{ data.connected ? 'green' : 'red' }}">{{ data.connected ? 'aktivní' : 'neaktivní' }}</td>
+			</tr>
+			<tr>
+				<td>Broker ID:</td>
+				<td>{{ data.config.market_credentials.id }}</td>
+				<td>Secret key:</td>
+				<td class="clickable" ng-click="showSecretKey()">{{ ( data.config.market_credentials.secret ? data.config.market_credentials.secret : "") | truncate:30 }}</td>
+			</tr>
+        </tbody>
+    </table>
+</div>
+
+
+<br />
+<h3>Úživatelské údaje</h3>
+<div class="detail_info">
+    <table class="table table-bordered table-striped">
+        <tbody>
+            <tr>
+            	<td>Defaultní účetní zůstatek:</td>
+            	<td>{{ data.config.default_acc_balance | currency:"$" }}</td>
+            	<td>Prostředí:</td>
+            	<td>{{ data.env }}</td>
+            </tr>
+            <tr>
+                <td>Celkem klientů:</td>
+                <td>{{ data.clientCount }}</td>
+                <td>Z toho online:</td>
+                <td>{{ data.onlineCount }}</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+

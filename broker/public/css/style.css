@@ -1,0 +1,132 @@
+body {
+  padding: 50px;
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+a {
+  color: #00B7FF;
+}
+
+#all {
+	max-width: 1024px;
+	margin: auto;
+}
+
+#content {
+	width: 880px;
+	margin: 0 auto;
+	padding: 10px;
+}
+
+.demo_container {
+	box-sizing: border-box;
+	width: 100%);
+	height: 450px;
+	padding: 20px 15px 15px 15px;
+	margin: 15px auto 30px auto;
+	border: 1px solid #ddd;
+	background: #fff;
+	background: linear-gradient(#f6f6f6 0, #fff 50px);
+	background: -o-linear-gradient(#f6f6f6 0, #fff 50px);
+	background: -ms-linear-gradient(#f6f6f6 0, #fff 50px);
+	background: -moz-linear-gradient(#f6f6f6 0, #fff 50px);
+	background: -webkit-linear-gradient(#f6f6f6 0, #fff 50px);
+	box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+	-o-box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+	-ms-box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+	-moz-box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+	-webkit-box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+}
+
+.demo-placeholder {
+	width: 100%;
+	height: 100%;
+	font-size: 14px;
+	line-height: 1.2em;
+}
+
+.legend table {
+	border-spacing: 5px;
+}
+
+.orderBook tr:first-child th:nth-child(1),
+.orderBook tr *:nth-child(4) {
+	border-right: 2px solid black;	
+}
+
+.orderBookFinal tr:first-child th:nth-child(1),
+.orderBookFinal tr *:nth-child(3) {
+	border-right: 2px solid black;	
+}
+
+
+
+.orderSum .max {
+	font-weight: bold;
+}
+
+.orderSum .minImbalance {
+	color: red;
+}
+
+
+.presetData {
+	margin-left: 10px;
+}
+
+.fright {
+	float: right;
+}
+
+.clear {
+
+	clear: both;
+}
+
+legend span {
+	cursor: pointer;
+	float: right;
+}
+
+
+.gridStyle {
+    border: 1px solid rgb(212,212,212);
+    width: 400px; 
+    height: 300px
+}
+
+
+.text-green {
+	color: green;
+}
+
+.text-red {
+	color: red;
+}
+
+.link {
+	cursor: pointer;
+}
+
+.modal {
+display: block !important;
+}
+
+.detail_info tr td:nth-child(2n-1) {
+
+	font-weight: bold;
+}
+
+.detail_info td {
+
+	width: 25% !important;
+}
+
+.clickable {
+	cursor: pointer;
+}
+
+.client_stock_list_sum {
+	font-weight: bold;
+	border-top: 2px solid #DDDDDD;
+}

@@ -1,0 +1,97 @@
+<!-- Content Header (Page header) -->
+<section class="content-header">
+    <h1>
+        Můj účet
+        <small>úprava údajů</small>
+    </h1>
+    <ol class="breadcrumb">
+        <li><a ng-href="/"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li class="active">Můj účet</li>
+    </ol>
+</section>
+
+<!-- Main content -->
+<section class="content">
+
+	<div class="col-md-6">
+
+		<!-- general form elements disabled -->
+		<div class="box box-primary">
+		    <div class="box-header">
+		        <h3 class="box-title">Hlavní údaje</h3>
+		    </div><!-- /.box-header -->
+	        <form role="form" id="userForm">
+		    	<div class="box-body">
+
+		    		<div class="callout callout-danger" ng-show="error">
+						<h4>Při ukládání došlo k chybě</h4>
+						<p>{{ error }}</p>
+					</div>
+		    		<div class="callout callout-success" ng-show="success">
+						<h4>Ukládání bylo úspěšné</h4>
+					</div>
+
+		            <!-- text input -->
+		            <div class="form-group">
+		                <label>Jméno</label>
+		                <input type="text" class="form-control" name="name" ng-model="info.name" />
+		            </div>
+		            <div class="form-group">
+		                <label>Email</label>
+		                <input type="email" class="form-control" name="email" ng-model="info.email" />
+		            </div>
+			    </div><!-- /.box-body -->
+			    <div class="box-footer">
+					<button class="btn btn-primary" type="submit" ng-click="saveInfo()">Uložit</button>
+				</div>
+	        </form>
+		</div><!-- /.box -->
+
+	</div><!--/.col (right) -->
+
+	<div class="col-md-6">
+
+		<!-- general form elements disabled -->
+		<div class="box box-info">
+		    <div class="box-header">
+		        <h3 class="box-title">Změna hesla</h3>
+		    </div><!-- /.box-header -->
+	        <form role="form" id="passForm">
+		    	<div class="box-body">
+
+		    		<div class="callout callout-danger" ng-show="error2">
+						<h4>Při ukládání došlo k chybě</h4>
+						<p>{{ error }}</p>
+					</div>
+		    		<div class="callout callout-success" ng-show="success2">
+						<h4>Ukládání bylo úspěšné</h4>
+					</div>
+
+		            <!-- text input -->
+		            <div class="form-group">
+		                <label>Staré heslo</label>
+		                <input type="password" class="form-control" name="old" ng-model="pass.old" />
+		            </div>
+		            <div class="form-group">
+		                <label>Nové Heslo</label>
+		                <input type="password" class="form-control" name="password" ng-model="pass.password" />
+		            </div>
+		            <div class="form-group">
+		                <label>Nové heslo znovu</label>
+		                <input type="password" class="form-control" name="password2" ng-model="pass.password2" />
+		            </div>
+			    </div><!-- /.box-body -->
+			    <div class="box-footer">
+					<button class="btn btn-primary" type="submit" ng-click="changePassword()">Změnit heslo!</button>
+				</div>
+	        </form>
+		</div><!-- /.box -->
+
+
+
+	</div><!--/.col (right) -->
+
+
+
+
+</section><!-- /.content -->

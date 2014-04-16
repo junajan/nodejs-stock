@@ -1,0 +1,45 @@
+{
+  "name": "Stock_viewer",
+  "version": "0.0.1",
+  "description": "Just a test...",
+  "private": true,
+  "main": "app.js",
+  "scripts": {
+    "test": "",
+    "start": "nodemon -e 'html,js,ejs,css' app.js"
+  },
+  "dependencies": {
+    "express": "latest",
+    "underscore": "latest",
+    "async": "latest",
+    "sha1": "latest",
+    "validator": "latest",
+    "passport": "latest",
+    "socket.io": "latest",
+    "connect-flash": "latest",
+    "express-ejs-layouts": "latest",
+    "ejs-locals": "latest",
+    "express-session": "latest",
+    "redis": "latest",
+    "connect": "latest",
+    "connect-file-store": "latest",
+    "generate-key": "latest",
+    "colors": "latest",
+    "request": "latest",
+    "passport-local": "latest",
+    "cookie-parser": "latest",
+    "connect-redis": "latest",
+    "body-parser": "latest",
+    "express-method-override": "latest",
+    "express-json": "latest",
+    "express-logger": "latest",
+    "express-error-handler": "latest",
+    "cookie-parser": "latest"
+
+  },
+  "devDependencies": {
+    "nodemon": "*",
+    "reload": "latest"
+  },
+  "author": "jeezaa"
+}

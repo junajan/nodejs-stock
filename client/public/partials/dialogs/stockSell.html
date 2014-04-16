@@ -1,0 +1,68 @@
+<div class="modal-header">
+    <h3>Prodej akcií - {{ sellInfo.name }}</h3>
+</div>
+
+<div class="modal-body">
+                    
+    <form class="form-horizontal" role="form">
+        <div class="form-group">
+
+            <label class="col-sm-3 control-label" for="price">Aktuální cena</label>
+            <div class="col-sm-9">
+                <span style="position: relative; top: 8px;"> 
+                    {{ sellInfo.actualPrice | currency: "$"}}
+                </span>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-3 control-label" for="price">Vaše cena</label>
+            <div class="col-sm-9">
+                <input type="text" class="form-control" id="price" ng-change="recount()" style="width: 120px; float: left;" ng-model="sell.price" ng-value="sell.price" placeholder="Cena jednotky">
+                <span style="position: relative; top: 8px; margin-left: 10px;"> 
+                    <a href="#" ng-click="plusPrice()" title="Zvýšit cenu">
+                        <i class="fa fa-plus"></i>
+                    </a>
+                    / 
+                    <a href="#" ng-click="minusPrice()" title="Snížit cenu">
+                        <i class="fa fa-minus"></i>
+                    </a>
+                </span>
+            </div>
+
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label" for="amount">Množství</label>
+            <div class="col-sm-9">
+                <input type="text" class="form-control" id="amount" ng-change="recount()" style="width: 120px; float: left;" ng-model="sell.amount" ng-value="sell.amount" placeholder="Počet jednotek">
+                <span style="position: relative; top: 8px; margin-left: 10px;"> 
+                    <a href="#" ng-click="plus()" title="Přidat jednotku">
+                        <i class="fa fa-plus"></i>
+                    </a>
+                    / 
+                    <a href="#" ng-click="minus()" title="Odebrat jednotku">
+                        <i class="fa fa-minus"></i>
+                    </a>
+                    /
+                    <a href="#" ng-click="max()" title="Maximální počet jednotek">
+                        max
+                    </a>
+                </span>
+            </div>
+
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">Celková cena:</label>
+            <div class="col-sm-9">
+                <span style="position: relative; top: 8px;"> 
+                    ${{ sell.priceSum}}
+                </span>
+            </div>
+        </div>
+        
+    </form>
+</div>
+<div class="modal-footer">
+    <button class="btn btn-success" ng-click="ok()">Odeslat</button>
+    <button class="btn btn-warning" ng-click="cancel()">Zrušit</button>
+</div>

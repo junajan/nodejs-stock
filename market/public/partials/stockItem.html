@@ -1,0 +1,82 @@
+<h3>Detail společnosti {{ info.name }} ({{ info.code }})</h3>
+
+<div class="detail_info">
+<table class="table table-bordered table-striped">
+	<tr>
+		<td>Kód:</td>
+		<td>{{ info.code }}</td>
+		<td>Počet akcií:</td>
+		<td>{{ info.amount }}</td>
+	</tr>
+	<tr>
+		<td>Cena:</td>
+		<td>{{ info.price | currency:"$" }}</td>
+		<td>Změna:</td>
+		<td ng-class="(info.priceChange >= 0) ? 'green' : 'red'">{{ info.priceChange }}%</td>
+	</tr>
+	<tr>
+		<td>Bid:</td>
+		<td>{{ info.bestSellPrice | currency:"$" }}</td>
+		<td>Ask:</td>
+		<td>{{ info.bestBuyPrice | currency:"$" }}</td>
+	</tr>
+	<!-- <tr>
+		<td>Prodávajících příkazů:</td>
+		<td>{{ info.amountOrdersSell }}</td>
+		<td>Nakupujících příkazů:</td>
+		<td>{{ info.amountOrdersBuy }}</td>
+	</tr> -->
+	<tr>
+		<td>Nabízených akcií:</td>
+		<td>{{ info.amountOrdersItemsSell }}</td>
+		<td>Požadovaných akcií:</td>
+		<td>{{ info.amountOrdersItemsBuy }}</td>
+	</tr>
+</table>
+</div>
+
+<legend>
+	Seznam příkazů
+	<span><a style="font-size: 13px;" class="link" ng-click="turnOnIds = !turnOnIds">zobrazit / skrýt ID záznamů</a></span>
+</legend>
+<div>
+	<table class="table table-striped orderBookRealtime">
+		<thead>
+	    	<tr>
+				<th colspan="5" align="center">Poptávka</th>
+				<th colspan="3" align="center">Nabídka</th>
+			</tr>
+			<tr>
+				<th>#</th>
+				<th></th>
+				<th>Součet</th>
+				<th>Množství</th>
+				<th>Cena</th>
+				<th>Množství</th>
+				<th>Součet</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr ng-repeat="(price, d) in orderBook">
+				<td>{{ $index }}</td>
+				<td>
+					<a style="cursor: pointer;" ng-click="openDetail( price )">
+						<span class="glyphicon glyphicon-list"></span>
+					</a>
+				</td>
+				<td>{{ d.buy.sumAmount  }}</td>
+				<td>
+					{{ d.buy.amount  }}
+					{{ (turnOnIds) ? '&nbsp;&nbsp; -> ' + d.buy.ordersId.join(', ') : '' }}
+				</td>
+				<td>{{ d.price | currency:"$" }}</td>
+				<td>{{ d.sell.amount }}</td>
+				<td>
+					{{ d.sell.sumAmount }}
+					{{ (turnOnIds) ? '&nbsp;&nbsp; -> ' + d.sell.ordersId.join(', ') : '' }}
+				</td>
+			</tr>
+		</tbody>
+	</table>
+
+</div>

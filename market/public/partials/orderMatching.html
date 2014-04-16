@@ -1,0 +1,211 @@
+<fieldset>
+	<legend>Add buy/sell order</legend>
+
+
+<form class="form-horizontal" role="form" ng-submit="addOrderItem(item)">
+
+  <div class="form-group">
+    <label for="input1" class="col-sm-2 control-label">Type:</label>
+    <div class="col-sm-10">
+  		<select id="input1" ng-model="item.type" ng-init="item.type='0'"name="type">
+			<option ng-selected="true" value="0">Sell</option>
+			<option value="1">Buy</option>
+		</select>
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="input2" class="col-sm-2 control-label">Price:</label>
+    <div class="col-sm-10">
+      <input id="input2" type="text" ng-model="item.price" required name="price" ng-init="item.price=100" />
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="input3" class="col-sm-2 control-label">Qty:</label>
+    <div class="col-sm-10">
+      <input id="input3" type="text" ng-model="item.qty" required name="qty" ng-init="item.qty=10" />
+    </div>
+  </div>
+  
+  <div class="form-group">
+    <div class="col-sm-offset-2 col-sm-10">
+      <button type="submit" class="btn btn-default">Add</button>
+    </div>
+  </div>
+</form>
+
+
+</fieldset>
+
+<p>Show/Hide json data: <span class="glyphicon glyphicon-plus" ng-click="showHide( $event )"></span></p>
+<div style="display: none;">
+{{ orderBook | json }}
+</div>
+
+<br />
+<br />
+
+
+<span class="fleft">
+	Reference price: <input type="text" name="referencePrice" ng-model="referencePrice" ng-init="referencePrice=100">
+
+</span>
+
+<span class="fright">
+Set test data: 
+<button class="presetData btn btn-info" ng-repeat="(ind, value) in testData" ng-click="setTestData( ind )">Test {{ind}}</button>
+<button class="presetData btn btn-danger" ng-click="clearBook()">Clear Book</button>
+
+</span>
+<div class="clear"></div>
+<br />
+<br />
+
+<legend>Order book <span class="glyphicon glyphicon-minus" ng-click="showHide( $event )"></span></legend>
+<div>
+	<table class="table table-striped orderBook">
+		<thead>
+	    	<tr>
+				<th colspan="4" align="center">Buy</th>
+				<th colspan="4" align="center">Sell</th>
+			</tr>
+			<tr>
+				<th>ID</th>
+				<th>Sum Qty</th>
+				<th>Qty</th>
+				<th>Price</th>
+				
+				<th>Price</th>
+				<th>Qty</th>
+				<th>Sum Qty</th>
+				<th>ID</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr ng-repeat="(index, line) in orderBookLines">
+				<td>{{ line.buy.id }}</td>
+				<td>{{ line.buy.sumQty }}</td>
+				<td>{{ line.buy.qty }}</td>
+				<td>{{ line.buy.price }}</td>
+				<td>{{ line.sell.price }}</td>
+				<td>{{ line.sell.qty }}</td>
+				<td>{{ line.sell.sumQty }}</td>
+				<td>{{ line.sell.id }}</td>
+			</tr>
+		</tbody>
+	</table>
+
+	<button class="btn btn-success" ng-click="processOrders()">Process orders!</button>  
+
+</div>
+
+<br />
+
+<div class="" ng-show="orderSumarization">
+	<legend>Sumarization <span class="glyphicon glyphicon-minus" ng-click="showHide( $event )"></span></legend>
+	<div>
+		<table class="table table-striped orderSum">
+			<thead>
+				<tr>
+					<th>Line ID</th>
+					<th>Price</th>
+					<th>Buy Qty</th>
+					<th>Sell Qty</th>
+					<th>Min Qty</th>
+					<th>Imbalance</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr ng-repeat="(index, line) in orderSumarization" ng-class="{max:maxLines.hasOwnProperty(index),minImbalance:minImbalances.hasOwnProperty(index)}">
+					<td>{{ index }}</td>
+					<td>{{ line.price }}</td>
+					<td>{{ line.buyQty }}</td>
+					<td>{{ line.sellQty }}</td>
+					<td>{{ line.minQty }}</td>
+					<td>{{ line.imbalance }}</td>
+				</tr>
+			</tbody>
+		</table>
+
+		<div class="" ng-show="endPrice">
+		
+			<b>EndPrice: {{ endPrice | json }}$</b>
+			<b ng-show="referencePriceRounded"> => rounded towards reference price ({{ referencePrice | json }}$)</b>
+			<br />
+			<b>Quantity to trade: {{ maxQty | json }}</b>
+
+			<br />
+			<br />
+			<button class="btn btn-success" ng-click="showFinalTrades()">Show final trades</button>  
+
+			<br />
+			<br />
+		</div>
+	</div>
+
+</div>
+
+<br />
+
+
+<div ng-show="finalTrades != null">
+	<legend>Final trades <span class="glyphicon glyphicon-minus" ng-click="showHide( $event )"></span></legend>
+
+	<table class="table table-striped finalTrades">
+		<thead>
+			<tr>
+				<th>To buyer</th>
+				<th>Qty@Price</th>
+				<th>From seller</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr ng-repeat="(index, line) in finalTrades">
+				<td>{{ line.buyId }}</td>
+				<td>{{ line.qty + "@" + endPrice }}</td>
+				<td>{{ line.sellId }}</td>
+			</tr>
+		</tbody>
+	</table>
+	
+
+	<br />
+
+
+	<legend>New order book <span class="glyphicon glyphicon-minus" ng-click="showHide( $event )"></span></legend>
+	<div>
+
+		<table class="table table-striped orderBookFinal">
+			<thead>
+		    	<tr>
+					<th colspan="3" align="center">Buy</th>
+					<th colspan="3" align="center">Sell</th>
+				</tr>
+				<tr>
+					<th>ID</th>
+					<th>Qty</th>
+					<th>Price</th>
+					
+					<th>Price</th>
+					<th>Qty</th>
+					<th>ID</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr ng-repeat="(index, line) in orderBookLinesNew">
+					<td>{{ line.buy.id }}</td>
+					<td>{{ line.buy.qty }}</td>
+					<td>{{ line.buy.price }}</td>
+					<td>{{ line.sell.price }}</td>
+					<td>{{ line.sell.qty }}</td>
+					<td>{{ line.sell.id }}</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</div>
+
+
+
+<div class="" ng-show="end">
+	{{ end | json }}
+</div>

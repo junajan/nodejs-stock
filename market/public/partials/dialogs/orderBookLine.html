@@ -1,0 +1,48 @@
+<div class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Detail příkazů pro cenu {{ lineDetailPrice | currency:"$" }}</h3>
+        </div>
+        <div class="modal-body">
+            <legend>Nákup</legend>
+            <table class="table table-striped orderBookRealtimeItem">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Množství</th>
+                        <th>ID</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="(i, d) in lineDetail.buy.orders">
+                        <td>{{ $index }}</td>
+                        <td>{{ d.amount }}</td>
+                        <td>{{ d._id }}</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <legend>Prodej</legend>
+
+            <table class="table table-striped orderBookRealtimeItem">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Množství</th>
+                        <th>ID</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="(i, d) in lineDetail.sell.orders">
+                        <td>{{ $index }}</td>
+                        <td>{{ d.amount }}</td>
+                        <td>{{ d._id }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-warning" ng-click="cancel()">Zrušit</button>
+        </div>
+    </div>
+</div>

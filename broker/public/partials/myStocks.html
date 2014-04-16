@@ -1,0 +1,43 @@
+<legend>
+    Seznam vlastněných akcií
+</legend>
+
+<table id="myStocks_table" class="table table-striped">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Jednotka</th>
+            <th>Aktuální cena</th>
+            <th>Nákupní cena</th>
+            <th>Množství</th>
+            <th>Cena celkem</th>
+            <th>Výnos</th>
+            <th colspan="3">Akce</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr class="client_stock_list_item" ng-repeat="(i, item) in ownedStocks">
+            <td>{{ $index + 1 }}</td>
+            <td title="{{ item.name }}">{{ item.code }}</td>
+            <td>{{ item.actualPrice | currency:"$" }}</td>
+            <td>{{ item.price / item.priceCount | currency:"$" }}</td>
+            <td>{{ item.amount }}</td>
+            <td>{{ item.price / item.priceCount * item.amount | currency: "$" }}</td>
+            <td ng-class="(item.actualPrice  - item.price / item.priceCount < 0) ? 'text-red' : 'text-green'">
+                {{ item.actualPrice * item.amount - item.price / item.priceCount * item.amount | currency:"$" }}
+                {{ ( item.actualPrice - item.price / item.priceCount ) / ( item.price / item.priceCount / 100 ) | number:2 }}%
+
+            </td>
+            <td align="center">
+                <a ng-click="showListDetail( i )" title="Detailní výpis nakoupených akcií" class="link">
+                    <i class="fa fa-info"></i>
+                </a>
+            </td>
+            <td align="center">
+                <a ng-href="/stocks/{{ item.code }}" title="Vývoj ceny akcie společnosti">
+                    <i class="fa fa-bar-chart-o"></i>
+                </a>
+            </td>
+        </tr>
+    </tbody>
+</table>

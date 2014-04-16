@@ -1,0 +1,13 @@
+<h1>Stock market admin</h1>
+
+<ul ng-controller="navCtrl" class="nav nav-tabs" ng-app="link">
+  <li ng-repeat="navLink in navLinks" ng-class="navClass('{{navLink.Title}}')">
+    <a href='/{{navLink.Title}}'>{{navLink.LinkText}}</a>
+  </li>
+</ul>
+
+<p>
+	<div id="messagesError" class="alert alert-danger" data-ng-show="messageError">{{ messageError }}</div>
+	<div id="messagesValid" class="alert alert-success" data-ng-show="messageValid">{{ messageValid }}</div>
+</p>
+

@@ -1,0 +1,26 @@
+<h2>Seznam obchodovatelných akcií</h2>
+
+<table class="table table-striped stockList" style="width: 500px;">
+	<thead>
+		<tr>
+			<th>Code</th>
+			<th>Name</th>
+			<th>Price</th>
+			<th>Detail</th>
+		</tr>
+	</thead>
+	<tbody>
+		<% for ( i in data ) {  item = data[i] %>
+		<tr>
+			<td><%= item.code %></td>
+			<td><%= item.name %></td>
+			<td><%= item.price %></td>
+			<td>
+				<a href="/stocks/<%= item.code %>">
+					<span class="glyphicon glyphicon-signal"></span>
+				</a>
+			</td>
+		</tr>
+		<% } %>
+	</tbody>
+</table>

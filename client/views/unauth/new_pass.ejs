@@ -1,0 +1,50 @@
+<div class="form-box" id="login-box">
+    <div class="header">Nastavení nového hesla</div>
+    <form action="" method="post">
+        <div class="body bg-gray">
+            <div class="form-group">
+                 <% if ( typeof msg != "undefined" && msg != "" ) { %>
+                    <div class="callout callout-warning login_alert">
+                        <h4><%= msg %></h4>
+                    </div>
+
+                <% } else if ( typeof info != "undefined" ) { %>
+
+                    <div class="callout callout-success login_succ" style="visibility:hidden;">
+                        <h4>Heslo bylo změněno. Nyní se můžete <a href="/">přihlásit</a>.</h4>
+                    </div>
+
+                    <script type="text/javascript">
+
+                        $(document).ready( function () {
+                            $(".login_succ").css('visibility','visible').hide().fadeIn('slow');
+                        });
+                    </script>
+                    
+                <% } else { %>
+
+                     <% if ( typeof msg2 != "undefined" && msg2 != "" ) { %>
+                        <div class="callout callout-warning login_alert">
+                            <h4><%= msg2 %></h4>
+                        </div>
+                    <% } %>
+                   
+                    <h5>Nové heslo:</h5>
+                    <input type="password" name="pass" class="form-control" placeholder="Zadejte nové heslo"/>
+                    <h5>Nové heslo znovu:</h5>
+                    <input type="password" name="pass2" class="form-control" placeholder="Zadejte nové heslo znovu pro ověření"/>
+
+                <% } %>
+            </div>
+        </div>
+        <div class="footer">                                                               
+
+            <% if ( typeof msg == "undefined" && typeof info == "undefined" ) { %>
+
+                <button type="submit" class="btn bg-olive btn-block">Nastavit nové heslo</button>  
+            <% } %>
+
+            <a href="/login" class="text-center">Zpět na stránku s přihlášením</a>
+        </div>
+    </form>
+</div>
