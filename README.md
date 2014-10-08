@@ -1,6 +1,6 @@
-# Nodejs simple stock
+# Nodejs simple stock market
 
-Simple stock made with MEAN stack.
+Simple stock market & broker & client app made in MEAN stack.
 
 ## Client
 
