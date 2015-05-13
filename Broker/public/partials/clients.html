@@ -1,0 +1,40 @@
+<legend>
+    Seznam registrovaných klientů
+</legend>
+
+<table class="table table-striped stockList" style="width: 900px;">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Jméno</th>
+            <th>Email</th>
+            <th>Stav účtu</th>
+            <th>Datum registrace</th>
+            <th>Poslední aktivita</th>
+            <th class="text-center">Status</th>
+            <th class="text-center">Detail</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr ng-repeat="(index, line) in clients">
+            <td>{{ $index + 1 }}</td>
+            <td>
+                <a class="link" href="/clients/{{ line._id }}" title="Detail klienta">
+                    {{ line.name }}
+                </a>
+            </td>
+            <td>{{ line.email }}</td>
+            <td>{{ line.accountBalance | currency:"$" }}</td>
+            <td>{{ line.regDate | date:"dd.MM.yyyy hh:mm:ss"}}</td>
+            <td>{{ line.updated | date:"dd.MM.yyyy hh:mm:ss"}}</td>
+            <td class="text-center">
+            	<i class="fa fa-circle" ng-class="(onlineClients.indexOf(line._id) != -1) ? 'text-green' : 'text-red'"></i>
+            </td>
+            <td class="text-center">
+                <a class="link" href="/clients/{{ line._id }}" title="Detail klienta">
+                    <span class="glyphicon glyphicon-stats"></span>
+                </a>
+            </td>
+        </tr>
+    </tbody>
+</table>

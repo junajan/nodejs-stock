@@ -1,0 +1,235 @@
+<!-- 
+<table class="table table-striped line">
+	<thead>
+    	<tr class="center">
+    		<th>Poptávka (BUY)</th>
+			<th></th>
+			<th></th>
+			<th>Nabídka (SELL)</th>
+			<th></th>
+		</tr>
+		<tr class="center l">
+			<th>Id</th>
+			<th>Množství</th>
+			<th>Cena</th>
+			<th>Množství</th>
+			<th>Id</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr ng-repeat="l in testData">
+			<td>{{ l.buy[0] }}</td>
+			<td>{{ l.buy[1] }}</td>
+			<td>${{ l.price }}</td>
+			<td>{{ l.sell[1] }}</td>
+			<td>{{ l.sell[0] }}</td>
+		</tr>
+	</tbody>
+</table> -->
+<!-- 
+
+<table class="table table-striped line">
+	<thead>
+    	<tr class="center">
+    		<th>Poptávka (BUY)</th>
+			<th></th>
+			<th></th>
+			<th>Nabídka (SELL)</th>
+			<th></th>
+		</tr>
+		<tr class="center l">
+			<th>Součet</th>
+			<th>Množství</th>
+			<th>Cena</th>
+			<th>Množství</th>
+			<th>Součet</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr ng-repeat="l in testData">
+			<td>{{ l.buy[0] }}</td>
+			<td>{{ l.buy[1] }}</td>
+			<td>${{ l.price }}</td>
+			<td>{{ l.sell[1] }}</td>
+			<td>{{ l.sell[0] }}</td>
+		</tr>
+	</tbody>
+</table>
+ -->
+
+
+
+<table class="table table-striped line">
+	<thead>
+		<tr class="center l">
+			<th>Cena</th>
+			<th>Poptávané množství</th>
+			<th>Nabízené množství</th>
+			<th>Zobchodovatelný objem</th>
+			<th>Imbalance</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr ng-repeat="l in testData">
+			<td>${{ l.price }}</td>
+			<td>{{ l.buy[0] }}</td>
+			<td>{{ l.sell[0] }}</td>
+			<td>{{ min(l.buy[0], l.sell[0]) }} <span ng-if="min(l.buy[0], l.sell[0]) > 0">(${{l.price * min(l.buy[0], l.sell[0])}})</span></td>
+			<td>{{ abs(l.buy[0] - l.sell[0]) }}</td>
+		</tr>
+	</tbody>
+</table>
+
+
+
+
+
+<!-- <br />
+
+
+<legend>
+	Základní statistiky
+	<span><a style="font-size: 13px;" class="link" onclick="$(this).parent().parent().next().fadeToggle();">zobrazit / skrýt</a></span>
+</legend>
+<div class="">
+
+	<table class="table_column_bold table table-bordered table-striped">
+	    <tr>
+	        <td>Počet všech akcií:</td>
+	        <td>{{ data.stockActualOrdersSum.amount }}</td>
+	        <td>Celková tržní kapitalizace:</td>
+	        <td>{{ data.stockActualOrdersSum.amountPrice | currency:'$' }}</td>
+	    </tr>
+	    <tr>
+	        <td>Nákupních příkazů:</td>
+	        <td>{{ data.stockActualOrdersSum.amountOrdersBuy }}</td>
+	        <td>Prodejních příkazů:</td>
+	        <td>{{ data.stockActualOrdersSum.amountOrdersSell }}</td>
+	    </tr>
+	    <tr>
+	        <td>Požadovaných akcií:</td>
+	        <td>{{ data.stockActualOrdersSum.amountOrdersItemsBuy }}</td>
+	        <td>Nabízených akcií:</td>
+	        <td>{{ data.stockActualOrdersSum.amountOrdersItemsSell }}</td>
+	    </tr>
+	    <tr>
+	        <td>Celkem příkazů v systému:</td>
+	        <td>{{ data.stockActualOrdersSum.amountOrdersBuy + data.stockActualOrdersSum.amountOrdersSell }}</td>
+	        <td></td>
+	        <td>{{  }}</td>
+	    </tr>
+	    
+	</table>
+</div>
+
+<legend>
+	Tržní kapitalizace jednotlivých akcií
+	<span><a style="font-size: 13px;" class="link" onclick="$(this).parent().parent().next().fadeToggle();">zobrazit / skrýt</a></span>
+</legend>
+<div class="">
+	<table class="table table-striped" style="width: 600px">
+		<thead>
+		    <tr>
+		        <th>Akcie</th>
+		        <th>Množství</th>
+		        <th>Cena </th>
+		        <th>Celkem </th>
+		    </tr>
+		</thead>
+	    <tr ng-repeat="(i, item) in data.actualStock">
+	        <td>
+	        	<a href="/stocks/{{ item.code }}" title="Detail společnosti">
+	                {{ item.code }}
+	            </a>
+	        </td>
+	        <td>{{ item.amount }}</td>
+	        <td>{{ item.price | currency:'$' }}</td>
+	        <td>{{ item.amount * item.price | currency:'$' }}</td>
+	    </tr>
+	    
+	</table>
+</div>
+
+<legend>
+	Denní statistiky
+	<span><a style="font-size: 13px;" class="link" onclick="$(this).parent().parent().next().fadeToggle();">zobrazit / skrýt</a></span>
+</legend>
+<div class="">
+
+	<table class="table_column_bold table table-bordered table-striped">
+	    <tr>
+	        <td>Počet emisí:</td>
+	        <td>{{ data.emissionCountDay.count }}</td>
+	        <td>Počet emitovaných akcií:</td>
+	        <td>{{ data.emissionCountDay.sumAmount }}</td>
+	        <td>Cena všech emitovaných akcií:</td>
+	        <td>{{ data.emissionCountDay.sumPriceAmount | currency:'$' }}</td>
+	    </tr>
+	    <tr>
+	        <td>Počet proběhlých obchodů:</td>
+	        <td>{{ dayData.bought.count }}</td>
+	        <td>Celkem prodaných akcií:</td>
+	        <td>{{ dayData.bought.sumAmount }}</td>
+	        <td>Cena celkem:</td>
+	        <td>{{ dayData.bought.sumPriceAmount | currency:'$' }}</td>
+	    </tr>
+	    <tr>
+	        <td>Počet zrušených příkazů:</td>
+	        <td>{{ dayData.cancelledSell.count + dayData.cancelledBuy.count }}</td>
+	        <td>Pro celkem akcií:</td>
+	        <td>{{ dayData.cancelledSell.sumAmount + dayData.cancelledBuy.sumAmount }}</td>
+	        <td>Cena celkem:</td>
+	        <td>{{ dayData.cancelledSell.sumPriceAmount + dayData.cancelledBuy.sumPriceAmount | currency:'$' }}</td>
+	    </tr>
+	    <tr>
+	        <td>Počet expirovaných příkazů:</td>
+	        <td>{{ dayData.expirySell.count + dayData.expiryBuy.count }}</td>
+	        <td>Pro celkem akcií:</td>
+	        <td>{{ dayData.expirySell.sumAmount + dayData.expiryBuy.sumAmount }}</td>
+	        <td>Cena celkem:</td>
+	        <td>{{ dayData.expirySell.sumPriceAmount + dayData.expiryBuy.sumPriceAmount | currency:'$' }}</td>
+	    </tr>
+	</table>
+</div>
+
+<legend>
+	Měsíční statistiky
+	<span><a style="font-size: 13px;" class="link" onclick="$(this).parent().parent().next().fadeToggle();">zobrazit / skrýt</a></span>
+</legend>
+<div class="">
+
+	<table class="table_column_bold table table-bordered table-striped">
+	    <tr>
+	        <td>Počet emisí:</td>
+	        <td>{{ data.emissionCountDay.count }}</td>
+	        <td>Počet emitovaných akcií:</td>
+	        <td>{{ data.emissionCountDay.sumAmount }}</td>
+	        <td>Cena všech emitovaných akcií:</td>
+	        <td>{{ data.emissionCountDay.sumPriceAmount | currency:'$'  }}</td>
+	    </tr>
+	    <tr>
+	        <td>Počet proběhlých obchodů:</td>
+	        <td>{{ monthData.bought.count }}</td>
+	        <td>Celkem prodaných akcií:</td>
+	        <td>{{ monthData.bought.sumAmount }}</td>
+	        <td>Cena celkem:</td>
+	        <td>{{ monthData.bought.sumPriceAmount | currency:'$' }}</td>
+	    </tr>
+	    <tr>
+	        <td>Počet zrušených příkazů:</td>
+	        <td>{{ monthData.cancelledSell.count + monthData.cancelledBuy.count }}</td>
+	        <td>Pro celkem akcií:</td>
+	        <td>{{ monthData.cancelledSell.sumAmount + monthData.cancelledBuy.sumAmount  }}</td>
+	        <td>Cena celkem:</td>
+	        <td>{{ monthData.cancelledSell.sumPriceAmount + monthData.cancelledBuy.sumPriceAmount | currency:'$' }}</td>
+	    </tr>
+	    <tr>
+	        <td>Počet expirovaných příkazů:</td>
+	        <td>{{ monthData.expirySell.count + monthData.expiryBuy.count }}</td>
+	        <td>Pro celkem akcií:</td>
+	        <td>{{ monthData.expirySell.sumAmount + monthData.expiryBuy.sumAmount  }}</td>
+	        <td>Cena celkem:</td>
+	        <td>{{ monthData.expirySell.sumPriceAmount + monthData.expiryBuy.sumPriceAmount | currency:'$' }}</td>
+	    </tr>
+	</table>
+</div>

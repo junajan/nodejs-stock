@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Market data history service</title>
+    <meta name="description" content="">
+    <meta name="author" content="jeezaa">
+
+    <!-- ========= Libs ======= -->
+    <script type="text/javascript" src="/reload/reload.js"></script>
+    <!-- <script type="text/javascript" src="/socket.io/socket.io.js"></script> -->
+
+    <!-- ===== Angular.JS ===== -->
+    <script src="/libs/angular/angular.min.js"></script>
+    <script src="/libs/angular/angular-route.min.js"></script>
+  
+    <script src="/libs/underscore-min.js"></script>
+
+    <!-- ======= jQuery ======= -->
+    <script src="/libs/jquery-1.11.0.min.js"></script>
+
+    <!-- ===== Bootstrap ====== -->
+    <link rel="stylesheet" href="/libs/bootstrap/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="/libs/bootstrap/css/bootstrap-theme.min.css" />
+    <script src="/libs/bootstrap/js/bootstrap.min.js"></script>
+
+    <link rel="stylesheet" href="/libs/Font-Awesome/css/font-awesome.css" />
+    <link href="/css/style.css" rel="stylesheet" />
+
+    <script src="/libs/highstock/js/highstock.js"></script>
+    <script src="/libs/highstock/js/modules/exporting.js"></script>
+
+
+    <base href="/" />
+  </head>
+  <body ng-app="fancyApp">
+    <div id="appMap">
+        <div>
+          Mapa:
+          <b>Market:</b> <a href="//biblio.stare.cz:5555">biblio.stare.cz:5555</a> 
+          | 
+          <b>Broker:</b> <a href="//biblio.stare.cz:5100">biblio.stare.cz:5100</a> 
+          | 
+          <b>Grafy:</b> <a href="//biblio.stare.cz:5400">biblio.stare.cz:5400</a> 
+          | 
+          <b>Robot01:</b> <a href="//biblio.stare.cz:5200">biblio.stare.cz:5200</a> 
+          | 
+          <b>Robot02:</b> <a href="//biblio.stare.cz:5201">biblio.stare.cz:5201</a>  
+        </div>
+    </div>
+    <div id="all">
+        <h1>Chart service</h1>
+        <div class="view" ng-view></div>
+    </div>
+    
+    <script type="text/javascript" src="/js/app.js"></script>
+    <script type="text/javascript" src="/js/ChartDirective.js"></script>
+    <script type="text/javascript" src="/js/StockListCtrl.js"></script>
+    <script type="text/javascript" src="/js/StockDetailCtrl.js"></script>
+  </body>
+</html>

@@ -1,0 +1,16 @@
+#!/bin/sh
+DIR=${0%/*}
+BASE="$DIR/../";
+
+if [ $# -eq 2 ]; then
+	
+	echo ">> Inserting default configuration for test robots to market DB";
+	psql -h $1 --port=$2 -U market market < ${BASE}Strike/Postgres/test_robots.sql
+	echo ">> Configuration has finished";
+else
+    echo ">> Init script ocekava 2 argumenty:";
+    echo ">> 	./config_robots PSQL_SERVER_ADDRESS PSQL_SERVER_PORT"
+    echo ">> "
+    echo ">> Priklad:"
+    echo ">> 	./config_robots 127.0.0.1 5432"
+fi

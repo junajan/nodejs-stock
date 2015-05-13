@@ -1,0 +1,28 @@
+<table class="table table-striped stockList" style="width: 500px;">
+	<thead>
+		<tr>
+			<th>Ticker</th>
+			<th>Jméno</th>
+			<th>Cena (změna)</th>
+			<th style="text-align: center">Detail</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr ng-if="loaded" ng-repeat="item in data">
+			<td>{{ item.ticker }}</td>
+			<td>{{ item.name }}</td>
+			<td>{{ item.price |currency }} ({{ item.priceChange }}%)</td>
+			<td align="center">
+				<a href="/stocks/{{ item.ticker }}">
+					<span class="fa fa-area-chart"></span>
+				</a>
+			</td>
+		</tr>
+		<tr ng-if="loaded && !count">
+			<td colspan="100%">Zatím zde nejsou žádné akcie</td>
+		</tr>
+		<tr ng-if="!loaded">
+			<td colspan="100%">Načítám... </td>
+		</tr>
+	</tbody>
+</table>

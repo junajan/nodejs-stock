@@ -1,0 +1,55 @@
+#!/bin/sh
+DIR=$(cd $(dirname $0); pwd -P);
+BASE="$DIR/../";
+
+
+echo ">> Instaluji zavislosti na obchodni platforme"
+cd "${BASE}Client";
+npm install;
+
+echo ">> Instaluji zavislosti na marketu"
+cd "${BASE}Market";
+npm install;
+
+echo ">> Instaluji zavislosti na brokerovi"
+cd "${BASE}Broker"
+npm install;
+
+echo ">> Instaluji zavislosti na robotovi"
+cd "${BASE}RobotBroker"; 
+npm install;
+
+echo ">> Instaluji zavislosti na sluzbe poskytujici historicka data"
+cd "${BASE}ChartService";
+npm install;
+
+
+# na bibliu nemam shell ucet, ale globalni sluzby jsou uz nainstalovane
+# pridal jsem proto parametr, ktery zamezi instalaci globalnich sluzeb
+if [ $# -eq 1 ]; then
+	echo ">> Preskakuji instalaci globalnich sluzeb"
+else
+	echo ">> Instaluji pouzivane sluzby - nodemon (pro spousteni sluzeb pri vyvoji)";
+	sudo npm install nodemon -g
+	echo ">> Instaluji pouzivane sluzby - forever (pro spousteni sluzeb v produkci)";
+	sudo npm install forever -g
+fi
+
+
+
+echo ">> Kompiluji workera"
+pwd
+cd "${BASE}Strike/C++/";
+make;
+
+echo ">> Kopiruji workera do ${BASE}tools/striker";
+cp "${BASE}Strike/C++/striker" "${BASE}tools/";
+
+echo ">> Kopiruji config workera do ${BASE}tools/striker.conf";
+cp "${BASE}Strike/C++/striker.conf" "${BASE}tools/";
+
+echo ">> Config strikera";
+cat "${BASE}tools/striker.conf";
+echo "";
+
+echo ">> !! Pokud jsou pristupove udaje k databazi nebo marketu jine, je nutne je zde upravit";

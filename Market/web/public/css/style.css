@@ -1,0 +1,233 @@
+
+.line tr td:nth-child(1),
+.line tr.l th:nth-child(1) {
+	border-right: 1px solid #DDDDDD;
+	font-weight: bold;
+}
+
+.line tr, tr.center th {
+}
+
+body {
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+a {
+  color: #00B7FF;
+}
+
+#all {
+	max-width: 1024px;
+	margin: auto;
+	margin-top: 0px;
+	padding-top: 100px;
+	position: relative;
+}
+
+.alert {
+	position: absolute;
+	top: 30px;
+	width: 100%;
+}
+
+.text-small {
+	font-size: 14px;
+	position: relative;
+	top: 8px;
+}
+
+#content {
+	width: 880px;
+	margin: 0 auto;
+	padding: 10px;
+}
+
+.detail_info {
+	
+	width: 500px;
+}
+
+.fleft {
+	float: left;
+}
+.fright {
+	float: right;
+}
+
+.clear {
+	clear:both;
+}
+
+.detail_info  td:nth-child(2n-1) {
+	font-weight: bold;
+}
+.table_column_bold  td:nth-child(2n-1) {
+	font-weight: bold;
+}
+
+.legend table {
+	border-spacing: 5px;
+}
+
+.orderBook tr:first-child th:nth-child(1),
+.orderBook tr *:nth-child(4) {
+	border-right: 2px solid black;	
+}
+
+.orderBookRealtime td:nth-child(5) {
+	
+	font-weight: bold;
+}
+
+.orderBookFinal tr:first-child th:nth-child(1),
+.orderBookFinal tr *:nth-child(3) {
+	border-right: 2px solid black;	
+}
+
+.orderSum .max {
+	font-weight: bold;
+}
+
+.orderSum .minImbalance {
+	color: red;
+}
+
+.presetData {
+	margin-left: 10px;
+}
+
+.fright {
+	float: right;
+}
+
+.clear {
+
+	clear: both;
+}
+
+legend span {
+	cursor: pointer;
+	float: right;
+}
+
+.red {
+	color: red;
+}
+.green {
+	color: green;
+}
+
+/* Fix for Bootstrap 3 with Angular UI Bootstrap */
+
+.modal { 
+	display: block;
+}
+
+/* Custom dialog/modal headers */
+
+.dialog-header-error { background-color: #d2322d; }
+.dialog-header-wait { background-color: #428bca; }
+.dialog-header-notify { background-color: #eeeeee; }
+.dialog-header-confirm { background-color: #333333; }
+	.dialog-header-error span, .dialog-header-error h4,
+	.dialog-header-wait span, .dialog-header-wait h4,
+	.dialog-header-confirm span, .dialog-header-confirm h4 { color: #ffffff; }
+
+/* Ease Display */
+
+.pad { padding: 25px; }
+
+.invis {
+	display: none;
+}
+
+.center {
+	text-align: center;
+}
+
+.link {
+	cursor: pointer;
+}
+
+.text-red {
+	color: red;
+}
+
+.text-green {
+	color: green;
+}
+
+
+.orderBookRealtime tr td:nth-child(5),
+.orderBookRealtime tr th:nth-child(5) {
+
+	border-left: 1px solid #DDDDDD;
+}
+
+.axisLabel {
+    position: absolute;
+    text-align: center;
+    font-size: 12px;
+}
+
+#xaxisLabel {
+    bottom: 0px;
+    right: 0 !important;
+}
+
+#yaxisLabel {
+    top: 50%;
+    left: 2px;
+    transform: rotate(-90deg);
+    -o-transform: rotate(-90deg);
+    -ms-transform: rotate(-90deg);
+    -moz-transform: rotate(-90deg);
+    -webkit-transform:  rotate(-90deg);
+    transform-origin: 0 0;
+    -o-transform-origin: 0 0;
+    -ms-transform-origin: 0 0;
+    -moz-transform-origin: 0 0;
+    -webkit-transform-origin: 0 0;
+}
+
+.chart_small {
+	position: relative;
+	top: -20px;
+
+}
+
+.chart_small .range {
+	margin-bottom: 5px;
+}
+
+.chart_small .range a {
+	cursor: pointer;
+}
+.invis {
+	display: none;
+}
+
+.text-bold {
+	font-weight: bold;
+}
+
+tr.best {
+	color: red;
+	font-weight: bold;
+}
+
+#appMap {
+	z-index: 1000;
+	position: absolute;
+	top:0px;
+	padding: 5px;
+	padding-top:5px;
+	border-bottom: 1px solid black;
+	background-color: white;
+	width: 100%;
+}
+
+#appMap>div {
+	width: 1024px;
+	margin: auto;
+}

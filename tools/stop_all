@@ -1,0 +1,8 @@
+#!/bin/sh
+DIR=${0%/*}
+
+echo ">> Zastavuji sluzby"
+forever stopall
+
+echo ">> Ukoncuji workery"
+pkill striker

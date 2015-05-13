@@ -1,0 +1,77 @@
+	bid / ask / insert_order(...):   -- již existuje, jen pro přehled
+	 - vytvoří objednávku
+	 - RECEIVED = now
+	 - vrátí číslo objednávky (nebo 0, pokud se nezadaří)
+
+	set_order_receiving_notified(id):
+	 - RECEIVING_NOTIFIED = now
+	 - "Broker byl informován o přijaté objednávce"
+
+	set_cancel_order_received(id):
+	 - CANCEL_RECEIVED = now
+	 - "Market přijal požadavek na zrušení objednávky"
+
+	cancel_order(id):
+	 - smaže objednávku v live_orders (pokud ještě existuje)
+	 - CANCELED = now
+	 - vrátí počet nezobchodovaných ks v této objednávce
+
+set_order_completion_notified(id):
+ - COMPLETION_NOTIFIED = now
+ - "Broker byl informován o konečném osudu objednávky"
+
+
+reject_order(id):
+ - smaže objednávku v live_orders
+ - REJECTED = now
+ - vrátí počet nezobchodovaných ks v této objednávce
+
+	expire_order(id):
+	 - smaže objednávku v live_orders
+	 - EXPIRED = now
+	 - vrátí počet nezobchodovaných ks v této objednávce
+
+------------------------------------------------------------------
+
+(Calculator->DB) process_trades(...): -- již existuje, jen pro přehled
+ - sníží AMOUNT v live_orders
+; pokud vyřízeno (zbývá 0):
+  - smaže objednávku v live_orders
+  - EXECUTED = now
+ - uloží vytvořené obchody do trades
+ - Calculator po zdařilém zápisu do DB pošle tyto obchody Marketu
+
+------------------------------------------------------------------
+"recovery funkce":
+
+	get_unnotified_receiving_orders():
+	 - vrátí objednávky, u kterých nebylo zaznamenáno odeslání potvrzení o přijetí objednávky
+	 - tedy WHERE RECEIVING_NOTIFIED = NULL
+
+get_uncanceled_orders():
+ - vrátí objednávky, u kterých byl přijat pokyn ke zrušení, ale k jejichž zrušení ještě nedošlo
+ - tedy WHERE RECEIVING_NOTIFIED != NULL AND CANCELED = NULL
+
+	get_unnotified_canceled_orders():
+	 - vrátí objednávky, které byly zrušeny, ale nebylo u nich zaznamenáno odeslání potvrzení o zrušení
+	 - tedy WHERE CANCELED != NULL WHERE COMPLETION_NOTIFIED = NULL
+
+	get_unnotified_expired_orders():
+	 - vrátí objednávky, které expirovaly, ale nebylo u nich zaznamenáno odeslání potvrzení o expiraci
+	 - tedy WHERE EXPIRED != NULL WHERE COMPLETION_NOTIFIED = NULL
+
+get_unnotified_rejected_orders():
+ - vrátí objednávky, které byly odmítnuty, ale nebylo u nich zaznamenáno odeslání potvrzení o odmítnutí
+ - tedy WHERE REJECTED != NULL WHERE COMPLETION_NOTIFIED = NULL
+
+	get_unnotified_trades():
+	 - vrátí obchody, u nichž nebylo zaznamenáno odeslání potvrzení o uzavření obchodu alespoň jedné straně
+	 - tedy WHERE BUYER_NOTIFIED = NULL OR SELLER_NOTIFIED = NULL
+
+
+
+--------------
+
+get_old_active_orders(older_than):
+ - vrátí aktivní objednávky starší než zadaný údaj (asi včetně)
+ - (a těm pak chudákům pak Market provede expire_order s jejich ID)

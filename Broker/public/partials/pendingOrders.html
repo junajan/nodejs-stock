@@ -1,0 +1,38 @@
+<legend>
+    Seznam nevyřízených příkazů
+</legend>
+
+<table class="table table-striped stockList" style="width: 900px;">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Klient</th>
+            <th>Jednotka</th>
+            <th>Typ příkazu</th>
+            <th>Cena</th>
+            <th>Množství</th>
+            <th>Celková cena</th>
+            <th>Datum podání příkazu</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr ng-repeat="(index, line) in orders">
+            <td>{{ $index + 1 }}</td>
+            <td>
+                <a href="/clients/{{ line.client }}">
+                    {{ clients[line.client] }}
+                </a>
+            </td>
+            <td>
+                <a href="/stocks/{{ line.ticker }}">
+                    {{ line.ticker }}
+                </a>
+            </td>
+            <td>{{ orderTypes[line.type] }}</td>
+            <td>{{ line.price | currency:"$" }}</td>
+            <td>{{ line.amount - line.filledAmount }}</td>
+            <td>{{ (line.amount - line.filledAmount) * line.price | currency:"$" }}</td>
+            <td>{{ line.date | date:"d.M.yyyy hh:mm:ss"}}</td>
+        </tr>
+    </tbody>
+</table>

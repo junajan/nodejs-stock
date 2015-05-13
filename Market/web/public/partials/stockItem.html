@@ -1,0 +1,124 @@
+<h3>Detail společnosti {{ stockInfo.name }} ({{ stockInfo.ticker }})</h3>
+
+<table class="table table-bordered table-striped">
+	<tr>
+		<td>Kód:</td>
+		<td>{{ stockInfo.ticker }}</td>
+		<td>Počet akcií:</td>
+		<td>{{ stockInfo.shares | number }}</td>
+	</tr>
+	<tr>
+		<td>Cena:</td>
+		<td>{{ stockInfo.price | currency:"$" }}</td>
+		<td>Změna:</td>
+		<td ng-class="( (stockInfo.priceChange ? stockInfo.priceChange : 0) >= 0) ? 'green' : 'red'">{{ stockInfo.priceChange ? stockInfo.priceChange : 0 }}%</td>
+	</tr>
+	<!-- <tr>
+		<td>Bid:</td>
+		<td>{{ stockInfo.bestSellPrice | currency:"$" }}</td>
+		<td>Ask:</td>
+		<td>{{ stockInfo.bestBuyPrice | currency:"$" }}</td>
+	</tr> -->
+	<!-- <tr>
+		<td>Amount:</td>
+		<td>{{ stockInfo.volume | number }}</td>
+		<td></td>
+		<td></td>
+	</tr> -->
+	<!-- <tr>
+		<td>Prodávajících příkazů:</td>
+		<td>{{ stockInfo.amountOrdersSell }}</td>
+		<td>Nakupujících příkazů:</td>
+		<td>{{ stockInfo.amountOrdersBuy }}</td>
+	</tr> -->
+	<!-- <tr>
+		<td>Nabízených akcií:</td>
+		<td>{{ stockInfo.amountOrdersItemsSell }}</td>
+		<td>Požadovaných akcií:</td>
+		<td>{{ stockInfo.amountOrdersItemsBuy }}</td>
+	</tr> -->
+	<tr>
+		<td>Akce:</td>
+		<td colspan="3" class="text-right">
+			<a ng-click="openEmission(stockInfo)" title="Emise akcií" class="link">
+	            <span class="glyphicon glyphicon-share"></span>
+	            emise
+	        </a>
+	        &nbsp;
+	        <a class="link" ng-click="showAddForm(stockInfo)" title="Editace společnosti">
+	            <span class="glyphicon glyphicon-edit"></span>
+	            editace
+	        </a>
+        </td>
+	</tr>
+</table>
+</div>
+
+
+<br />
+<div class="clear"></div>
+
+<legend>
+	Graf vývoje ceny
+	<span><a style="font-size: 13px;" class="link" onclick="$(this).parent().parent().next().fadeToggle();">zobrazit / skrýt</a></span>
+</legend>
+<div class="charts" ng-if="stockInfo.ticker" style="min-height: 40px;">
+	<chart ticker="stockInfo.ticker"></chart>
+</div>
+
+<legend>
+	Seznam příkazů
+	<span><a style="font-size: 13px;" class="link" ng-click="turnOnIds = !turnOnIds">zobrazit / skrýt ID záznamů</a></span>
+</legend>
+<div>
+	<table class="table table-striped orderBookRealtime">
+		<thead>
+	    	<tr>
+				<th colspan="5" align="center">Poptávka</th>
+				<th colspan="4" align="center">Nabídka</th>
+			</tr>
+			<tr>
+				<th>#</th>
+				<th></th>
+				<th>Součet</th>
+				<th>Množství</th>
+				<th>Cena</th>
+				<th>Množství</th>
+				<th>Součet</th>
+				<th style="border-left: 1px solid black;">Zob. Objem</th>
+				<th>Převis</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr ng-repeat="(price, d) in orderBook" ng-class="{ crossover: d.buy.amount > 0 && d.sell.amount, best: d.isMax}">
+				<td>{{ $index }}</td>
+				<td>
+					<a style="cursor: pointer;" ng-click="openDetail( price )">
+						<span class="glyphicon glyphicon-list"></span>
+					</a>
+				</td>
+				<td>{{ d.buy.sumAmount  }}</td>
+				<td>
+					{{ d.buy.amount | number  }}
+					{{ (turnOnIds) ? '&nbsp;&nbsp; -> ' + d.buy.ordersId.join(', ') : '' }}
+				</td>
+				<td>{{ d.price | currency:"$" }}</td>
+				<td>{{ d.sell.amount }}</td>
+				<td>
+					{{ d.sell.sumAmount | number }}
+					{{ (turnOnIds) ? '&nbsp;&nbsp; -> ' + d.sell.ordersId.join(', ') : '' }}
+				</td>
+				<td style="border-left: 1px solid black;">
+					{{ d.min | number}}
+				</td>
+				<td>
+					{{ d.diff | number}}
+				</td>
+			</tr>
+			<tr ng-if="!orderBook.length">
+				<td colspan="100%">V systému zatím není žádný příkaz.</td>
+			</tr>
+		</tbody>
+	</table>
+
+</div>

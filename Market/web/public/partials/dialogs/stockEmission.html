@@ -1,0 +1,29 @@
+<div class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Emise akcií pro {{ ticker }}!</h3>
+        </div>
+        <div class="modal-body">
+                            
+            <form class="form-horizontal" role="form">
+                <div class="form-group">
+                    <label class="col-sm-2 control-label" for="amount">Množství</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="amount" ng-model="emise.amount" placeholder="Počet jednotek">
+                    </div>
+                </div>
+                <div class="form-group">
+
+                    <label class="col-sm-2 control-label" for="price">Cena</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="price" ng-model="emise.price" placeholder="Cena jednotky">
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-success" ng-click="ok()">Odeslat</button>
+            <button class="btn btn-warning" ng-click="cancel()">Zrušit</button>
+        </div>
+    </div>
+</div>

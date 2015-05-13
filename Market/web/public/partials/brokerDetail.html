@@ -1,0 +1,46 @@
+<h3>Detail brokera - {{ info.name }}</h3>
+<div class="fleft">
+    <table class="table table-bordered table-striped">
+        <tr>
+            <td>Jméno:</td>
+            <td>{{ info.name }}</td>
+            <td>Auth token:</td>
+            <td>{{ info.token }}</td>
+        </tr>
+        <tr>
+            <td>BrokerId:</td>
+            <td>{{ info.id }}</td><td>Vlastněných akcií:</td>
+            <td>{{ stocksSum }}</td>
+        </tr>
+        <tr>
+            <td>Aktivní:</td>
+            <td colspan="3">
+                <i class="fa fa-circle" ng-class="(status || info.id == 1) ? 'text-green' : 'text-red'"></i>
+            </td>
+        </tr>
+    </table>
+</div>
+
+<div class="clear"></div>
+
+<section>
+	<label><h3>Seznam vlastněných akcií</h3></label>
+	<table style="width: 200px;" class="table table-bordered table-striped">
+     	<thead>
+			<tr>
+				<th>Akcie</th>
+				<th>Množství</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr ng-repeat="(i, item) in ownedStocks">
+				<td>
+                    <a href="/stocks/{{item.info.ticker}}" title="Detail akcie">
+                        {{item.info.ticker}}
+                    </a>
+                </td>
+				<td>{{item.amount}}ks</td>
+			</tr>
+		</tbody>
+	</table>
+</section>

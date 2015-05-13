@@ -1,0 +1,25 @@
+#!/bin/sh
+DIR=${0%/*}
+BASE="$DIR/../";
+
+if [ $# -eq 2 ]; then
+	
+	echo ">> Spoustim roboty na portech od $1 do $2";
+
+	cd "${BASE}";
+
+	i=$1
+	max=$2
+	max=$((max+1))
+	while [ $max -gt $i ]
+	do
+		NODE_ENV=production NODE_ROBOT_PORT=$i node RobotBroker/app.js > /dev/null &
+	    i=$((i+1))
+	done
+else
+    echo ">> Script ocekava 2 argumenty:";
+    echo ">> 	./start_robots MIN_PORT MAX_PORT"
+    echo ">> "
+    echo ">> Priklad:"
+    echo ">> 	./start_robots 7000 7010"
+fi

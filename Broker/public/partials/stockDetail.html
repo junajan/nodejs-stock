@@ -1,0 +1,114 @@
+<h3>Detail akcie {{ info.name }} ({{ info.ticker }})</h3>
+
+<div class="detail_info">
+    <table class="table table-bordered table-striped" style="max-width: 700px;">
+        <tr>
+            <td>Kód:</td>
+            <td>{{ info.ticker }}</td>
+            <td>Počet akcií na trhu:</td>
+            <td>{{ info.shares }}</td>
+        </tr>
+        <tr>
+            <td>Cena:</td>
+            <td>{{ info.price | currency:"$" }}</td>
+            <td>Změna:</td>
+            <td ng-class="(info.priceChange >= 0) ? 'green' : 'red'">{{ info.priceChange }}%</td>
+        </tr>
+       <!--  <tr>
+            <td>Bid:</td>
+            <td>{{ info.bestSellPrice | currency:"$" }}</td>
+            <td>Ask:</td>
+            <td>{{ info.bestBuyPrice | currency:"$" }}</td>
+        </tr>
+        <tr>
+            <td>Nabízených akcií:</td>
+            <td>{{ info.amountOrdersItemsSell }}</td>
+            <td>Požadovaných akcií:</td>
+            <td>{{ info.amountOrdersItemsBuy }}</td>
+        </tr>
+        <tr>
+        	<td>Celkem držených akcií:</td>
+        	<td>{{ info.amountOwned }}</td>
+        	<td>Výnos:</td>
+        	 <td ng-class="(info.price  - item.price / item.priceCount < 0) ? 'red' : 'green'">
+            	{{ item.actualPrice * item.amount - item.price / item.priceCount  * item.amount | currency:"$" }}
+            	{{ ( item.actualPrice - item.price / item.priceCount)   / ( item.price / 100 ) | number:2 }}%
+            </td>
+        </tr>
+         -->
+    </table>
+</div>
+
+<br />
+
+
+<legend>
+    Vlastněné akcie
+    <span><a style="font-size: 13px;" class="link" onclick="$(this).parent().parent().next().fadeToggle();">zobrazit / skrýt</a></span>
+</legend>
+<table id="myStocks_table" class="table table-striped">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Klient</th>
+            <th>Aktuální cena</th>
+            <th>Nákupní cena</th>
+            <th>Množství</th>
+            <th>Cena celkem</th>
+            <th>Výnos</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr class="client_stock_list_item" ng-repeat="(client, item) in ownedClients">
+            <td>{{ $index + 1 }}</td>
+            <td><a href="/clients/{{client}}">{{ clients[client] }}</a></td>
+            <td>{{ item.actualPrice | currency:"$" }}</td>
+            <td>{{ (item.priceCount / item.amount ) | currency:"$" }}</td>
+            <td>{{ item.amount }}</td>
+            <td>{{ item.priceCount | currency:"$" }}</td>
+            <td ng-class="(info.price * item.amount - item.priceCount < 0) ? 'text-red' : 'text-green'">
+                {{ info.price * item.amount - item.priceCount | currency:"$" }}
+                {{ ( info.price -  item.priceCount / item.amount)   / ( item.priceCount / item.amount / 100 ) | number:2 }}%
+            </td>
+        </tr>
+        <tr class="client_stock_list_sum" ng-repeat="(i, item) in ownedSum">
+            <td></td>
+            <td>Suma:</td>
+            <td>{{ item.actualPrice | currency:"$" }}</td>
+            <td>{{ item.price / item.priceCount | currency:"$" }}</td>
+            <td>{{ item.amount }}</td>
+            <td>{{ item.price / item.priceCount * item.amount | currency: "$" }}</td>
+            <td ng-class="(item.actualPrice  - item.price / item.priceCount < 0) ? 'text-red' : 'text-green'">
+                {{ item.actualPrice * item.amount - item.price / item.priceCount * item.amount | currency:"$" }}
+                {{ ( info.price -  item.price / item.priceCount)   / ( item.price / item.amount / 100 ) | number:2 }}%
+            </td>
+        </tr>
+        <tr ng-show="ownedSumCount == 0 ">
+            <td colspan="100%">Pro tuto společnost nejsou nakoupené žádné akcie.</td>
+        </tr>
+    </tbody>
+</table>
+
+
+<legend>
+    Vývoj ceny
+    <span><a style="font-size: 13px;" class="link" onclick="$(this).parent().parent().next().fadeToggle();">zobrazit / skrýt</a></span>
+</legend>
+
+<div class="charts">    
+    <div id="loading-msg">Loading chart data...</div>
+    
+    <div class="invis">
+        <div class="range">
+            Časový úsek: 
+            <a id="type_1" ng-click="loadGraph ( 1 );">Minuta</a> | 
+            <a id="type_30" ng-click="loadGraph ( 30 );">Hodina</a> | 
+            <a id="type_450" ng-click="loadGraph ( 450 );">Den</a>
+            <a ng-click="stopStart()" class="fright">Stop/Start</a>
+        </div>
+
+        <div id="chart_price2" style="width: 100%; height: 250px;"></div>
+        <br />
+        <div id="chart_amount2" style="width: 100%; height: 150px;"></div>
+    </div>
+</div>

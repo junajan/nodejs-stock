@@ -1,0 +1,123 @@
+<!-- Content Header (Page header) -->
+<section class="content-header">
+    <h1>
+        Moje akcie
+        <small>Nakoupené akcie a nevyřízené příkazy</small>
+    </h1>
+    <ol class="breadcrumb">
+        <li><a href="/"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li class="active">Moje akcie</li>
+    </ol>
+</section>
+
+<!-- Main content -->
+<section class="content">
+
+	
+	<div class="col-md-12">
+	    <div class="box box-primary">
+	        <div class="box-header">
+	            <h3 class="box-title">Nakoupené akcie</h3>
+	        </div><!-- /.box-header -->
+	        <div class="box-body">
+	            <table id="myStocks_table" class="table table-bordered">
+	                <tbody><tr>
+	                    <th>#</th>
+	                    <th>Jednotka</th>
+	                    <th>Aktuální cena</th>
+	                    <th>Nákupní cena</th>
+	                    <th>Množství</th>
+	                    <th>Cena celkem</th>
+	                    <th>Výnos</th>
+	                    <th colspan="3">Akce</th>
+	                </tr>
+	                <tr class="client_stock_list_item" ng-repeat="(i, item) in myStocks">
+	                    <td>{{ $index + 1 }}</td>
+	                    <td title="{{ item.name }}">
+	                    	<a ng-href="/detail/{{ item.ticker }}" title="Vývoj ceny akcie společnosti">
+			                    {{ item.ticker }}
+	                    	</a>
+	                    </td>
+	                    <td>{{ item.actualPrice | currency:"$" }}</td>
+	                    <td>{{ item.price / item.priceCount | currency:"$" }}</td>
+	                    <td>{{ item.amount }}</td>
+	                    <td>{{ item.price / item.priceCount * item.amount | currency: "$" }}</td>
+	                    <td ng-class="(item.actualPrice  - item.price / item.priceCount < 0) ? 'red' : 'green'">
+	                    	{{ item.actualPrice * item.amount - item.price / item.priceCount  * item.amount | currency:"$" }}
+	                    	| 
+							{{ (item.actualPrice - item.price / item.priceCount ) / (item.price / item.priceCount) * 100  | number:2 }}%
+	                    </td>
+	                    <td align="center">
+	                    	<a ng-href="#" ng-click="showListDetail( i )" title="Detailní výpis nakoupených akcií">
+	                    		<i class="fa fa-info"></i>
+	                    	</a>
+	                    </td>
+	                    <td align="center">
+	                    	<a ng-href="/detail/{{ item.ticker }}" title="Vývoj ceny akcie společnosti">
+	                    		<i class="fa fa-bar-chart-o"></i>
+	                    	</a>
+	                    </td>
+	                    <td>
+	                		<a href="#" ng-click="sellStock( i )" title="Prodat akcie">
+	                    		<i class="fa fa-minus-circle"></i>
+	                    	</a>
+	                	</td>
+	                </tr>
+	            </tbody></table>
+	        </div><!-- /.box-body -->
+	    </div><!-- /.box -->
+	</div>
+
+	<div class="col-md-12">
+	    <div class="box box-danger">
+	        <div class="box-header">
+	            <h3 class="box-title">Příkazy čekající na vyřízení</h3>
+	        </div><!-- /.box-header -->
+	        <div class="box-body">
+	            <table id="myOrders_table" class="table table-bordered">
+	                <tbody><tr>
+	                    <th>#</th>
+	                    <th>Jednotka</th>
+	                    <th>Typ příkazu</th>
+	                    <th>Cena</th>
+	                    <th>Množství</th>
+	                    <th>Cena celkem</th>
+	                    <th>Datum podání příkazu</th>
+	                    <th colspan="2"></th>
+	                </tr>
+	                <tr ng-repeat="(i, item) in myOrders">
+	                    <td>{{ $index + 1 }}</td>
+	                    <td title="{{ item.name }}">
+	                    	<a ng-href="/detail/{{ item.ticker }}" title="Vývoj ceny akcie společnosti">
+			                    {{ item.ticker }}
+	                    	</a>
+	                    </td>
+	                    <td>{{ orderTypes[item.type] }}</td>
+	                    <td>{{ item.price }}$</td>
+	                    <td>{{ item.amount - item.filledAmount }}</td>
+	                    <td>{{ ((item.amount - item.filledAmount) * item.price ) | currency:"$" }}</td>
+	                    <td>{{ item.date | date:'medium' }}</td>
+	                    <td align="center">
+	                    	<a ng-href="/detail/{{ item.ticker }}" title="Detail akcie">
+	                    		<i class="fa fa-bar-chart-o"></i>
+	                    	</a>
+	                	</td>
+	                	<td align="center">
+	                    	<a href="#" ng-show="! item.cancelOrder" ng-click="cancelOrder( item )" title="Zrušit příkaz!">
+	                    		<i class="fa fa-minus-circle "></i>
+	                    	</a>
+	                    	<a href="#" class="shadow disabled" ng-show="item.cancelOrder" onClick="alert('Byl odeslán příkaz na zrušení!')" >
+	                    		<i class="fa fa-minus-circle "></i>
+	                    	</a>
+	                	</td>
+	                </tr>
+					<tr ng-if="! myOrders.length">
+						<td colspan="100%">Nemáte žádné nevyřízené příkazy</td>
+					</tr>
+	            </tbody>
+	        </table>
+	        </div><!-- /.box-body -->
+	    </div><!-- /.box -->
+	</div>
+
+</section><!-- /.content -->

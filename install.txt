@@ -1,0 +1,75 @@
+/**
+ * Autor: Jan Juna
+ * email: mail@janjuna.cz
+ */
+
+#=======================================
+#============ Instalace ================
+#=======================================
+
+Instalace a ovladani vytvorenych scriptu je popsano take v praci v kapitole 5 - Deployment.
+
+#=======================================
+#======= Instalace zavislosti ==========
+#=======================================
+	
+Pro beh systemu se pouzivaji tyto technologie:
+	MongoDB
+	PostreSQL
+	Redis
+	Node.JS
+	NPM manager
+
+Jejich instalace se udela pomoci scriptu
+
+> ./tools/install_prerequizities
+
+
+#=======================================
+#========= Deploy prostredi ============
+#=======================================
+
+Pro ukazkovy priklad je predpokladana tato konfigurace:
+
+PostgreSQL pristupy pro market DB:
+user: 	market
+pass: 	market
+db: 	market
+
+#============================================
+#============ Nahozeni databaze =============
+#============================================
+
+Pro nahozeni defaultni podoby slouzi script
+> tools/init_database
+
+ktery zajisti nahrani schematu z prace O. Fremunta
+Nasledne je mozne nahrat defaultni konfiguraci pristupovych udaju dalsich sluzeb pomoci:
+> tools/config_database
+
+
+#================================
+#========== Instalace  ==========
+#================================
+
+Pro instalaci zavislosti slouzi script:
+> ./tools/install
+
+#================================
+#====== Spusteni systemu ========
+#================================
+
+Pro spusteni s porty uvedenymi v kapitole 5 lze pouzit script
+> ./tools/start_production
+
+Pro jejich zastaveni pak:
+> ./tools/stop_all
+
+
+Cely system bezi take serveru biblio.stare.cz na adresach:
+	market.stare.cz (port 5500)
+	broker.stare.cz (port 5100)
+	client.stare.cz (port 5000)
+	robot01.stare.cz (port 5200)
+	robot02.stare.cz (port 5201)
+

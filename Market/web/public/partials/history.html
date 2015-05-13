@@ -1,0 +1,43 @@
+<legend>
+    Historie
+</legend>
+
+<table class="table table-striped stockList">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Broker</th>
+            <th>Událost</th>
+            <th>Akcie</th>
+            <th>Počet</th>
+            <th>Cena</th>
+            <th>Celkem</th>
+            <th>Datum</th>
+            <th align="center">Přečteno</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr ng-repeat="(index, line) in data" ng-class="! line.readedDate ? 'text-bold' : ''">
+            <td>{{ $index + 1 }}</td>
+            <td>
+                <a class="link" href="/brokers/{{ line.broker_id }}" title="Detail brokera">
+                    {{ brokers[line.broker_id].name }}
+                </a>
+            </td>
+            <td>{{ EVENT_NAMES[line.type] }}</td>
+            <td>
+                <a href="/stocks/{{ line.code }}" title="Detail akcie">
+                    {{ line.code }}
+                </a>
+            </td>
+            <td align="center">{{ line.amount }}</td>
+            <td>{{ line.price | currency:'$' }}</td>
+            <td>{{ (line.amount*line.price) | currency:'$' }}</td>
+            <td>{{ line.date | date:'yyyy-MM-dd HH:mm:ss.sss' }}</td>
+            <td align="center">
+                <span ng-show="line.readedDate" class="glyphicon glyphicon-ok" title="{{ line.readedDate | date:'yyyy-MM-dd HH:mm:ss.sss' }}"></span>
+            </td>
+        </tr>
+    </tbody>
+</table>
+

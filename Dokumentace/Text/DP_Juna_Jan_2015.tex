@@ -1,0 +1,2099 @@
+% options:
+% thesis=B bachelor's thesis
+% thesis=M master's thesis
+% czech thesis in Czech language
+% slovak thesis in Slovak language
+% english thesis in English language
+% hidelinks remove colour boxes around hyperlinks
+
+\documentclass[thesis=M,czech]{FITthesis}[2012/06/26]
+
+\usepackage[utf8]{inputenc} % LaTeX source encoded as UTF-8
+
+\usepackage{graphicx} %graphics files inclusion
+% \usepackage{amsmath} %advanced maths
+% \usepackage{amssymb} %additional math symbols
+
+\usepackage{dirtree} %directory tree visualisation
+\usepackage{listings}
+\lstset{
+  inputencoding=latin1,
+  basicstyle=\footnotesize\ttfamily,
+  keywordstyle=\color{blue},        
+  breaklines=true,
+  showtabs=false,
+  showstringspaces=false,
+}  
+
+\lstset{% Add other global options here
+  basicstyle=\small\sffamily,
+  escapechar=\Ł% char to escape out of listings and back to LaTeX
+}
+
+% % list of acronyms
+% \usepackage[acronym,nonumberlist,toc,numberedsection=autolabel]{glossaries}
+% \iflanguage{czech}{\renewcommand*{\acronymname}{Seznam pou{\v z}it{\' y}ch zkratek}}{}
+% \makeglossaries
+
+\newcommand{\tg}{\mathop{\mathrm{tg}}} %cesky tangens
+\newcommand{\cotg}{\mathop{\mathrm{cotg}}} %cesky cotangens
+\newcommand\fnurl[2]{\href{#2}{#1}\footnote{\url{#2}}}
+
+
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
+% ODTUD DAL VSE ZMENTE
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
+
+\department{Katedra počítačových systémů}
+\title{Simulátor akciové burzy}
+\authorGN{Jan} %(křestní) jméno (jména) autora
+\authorFN{Jůna} %příjmení autora
+\authorWithDegrees{Bc.  Jan Jůna} %jméno autora včetně současných akademických titulů
+\supervisor{Mgr. Jan Starý, PhD.}
+\acknowledgements{Tímto chci poděkovat panu Mgr. Janu Starému za jeho pomoc při mých prvních krůčcích na kapitálových trzích, za tolik drahocenný čas, který mi věnoval a za inspirativní pohled na svět investičních příležitostí, který jsem si z této práce odnesl. Dále děkuji svým rodičům a přátelům, s jejichž podporou jsem byl schopen práci dokončit.}
+
+\abstractCS{Práce se zabývá tvorbou základního burzovního systému. S využitím algoritmu pro spárování burzovních příkazů budujeme obchodní portál umožňující zadávat příkazy pro nákup a prodej akcií.}
+\abstractEN{This work deals with a rudimentary stock exhcange simulator. Using an order matching algorithm, we build a market portal which accepts basic buy and sell orders.}
+
+%
+%\abstractCS{Práce se zabývá tvorbou burzovního systému od základních kamenů jako %je order matching algoritmus pro spárování burzovních příkazů až po obchodní %portál umožňující zadávat příkazy pro nákup nebo prodej akcií. Aplikace je také %tvořena pomocí moderních technologií, jako je Node.JS, Angular.JS, noSQL databáze %MongoDB a mnoho dalších. Vše je tvořeno jednodušše a co nejvíce transparentně.}
+%\abstractEN{Sem doplňte ekvivalent abstraktu Vaší práce v~angličtině.}
+
+\placeForDeclarationOfAuthenticity{V~Praze}
+\declarationOfAuthenticityOption{4} %volba Prohlášení (číslo 1-6)
+
+\keywordsCS{akciová burza, burzovní systém, trading, realtime aplikace, node.js, angular.js, mongodb, socket.io}
+\keywordsEN{stock market, stock market system, trading, realtime application, node.js, angular.js, mongodb, socket.io}
+
+\begin{document}
+
+% \newacronym{CVUT}{{\v C}VUT}{{\v C}esk{\' e} vysok{\' e} u{\v c}en{\' i} technick{\' e} v Praze}
+% \newacronym{FIT}{FIT}{Fakulta informa{\v c}n{\' i}ch technologi{\' i}}
+
+\begin{introduction}
+
+	V posledních deseti letech dvacátého století došlo k rozmachu kapitálových trhů po celém světě. To bylo způsobeno především díky zavedení internetu a~dalších technických inovací do burzovních systémů, čímž, mimo jiné, došlo k výraznému snížení poplatků účtovaných za použití takového systému a do burzovního světa tak začali pronikat i první drobní investoři.
+	
+	Od té doby uplynulo již více než dvacet let a burzovní svět prošel ještě mnohými změnami. Stejně tak se udály i světové krize, jejichž síla se ještě umocnila právě díky globalizaci a propojení jednotlivých burz.
+	
+	Na druhou stranu však propojení a modernizace vytvořily nové příležitosti pro menší investory a položily základ automatickému obchodování, které na dnešních burzách naprosto převládá. Podle \cite{Sharehold} je průměrná doba držení akcií 22 sekund a průměrným investorem je nyní počítač. Protože se však obchoduje s kapitálem často až v astronomické výši, je důležité takové automatické obchodní systémy otestovat v nejrůznějších situacích, kterými se trh může ubírat.
+
+	V této práci si proto kladu za cíl vytvořit základ jednoduchého simulátoru akciové burzy, která bude klientům umožňovat nákup a prodej akcií vypsaných na burze. Práce se pak může dále rozšiřovat za účelem vytvoření komplexního burzovního simulátoru, s jehož pomocí lze testovat chování nejrůznějších obchodních strategií v modelových situacích, jako jsou například světové krize nebo období nízké volatility.
+	
+	
+\end{introduction}
+\chapter{Cíl práce a motivace}
+\label{chap:motivation}
+
+\section{Motivace}
+	Akciová burza a obecně burza cenných papírů je místo, kde mohou firmy získat potřebný kapitál pro další rozvoj tím, že nabídnou veřejnosti svůj podíl v podobě \textit{akcií} (neboli cenných papírů). Drobní investoři, velké investiční banky a~další zájemci pak tyto akcie kupují s vírou v jejich rostoucí cenu a~tím i ve zhodnocení vloženého majetku. Burza však v~sobě skrývá i mnohá rizika v~podobě ztráty investovaného jmění, a proto je dobré znát základní složky a~procesy v~takovém systému, které vývoj ceny ovlivňují.
+
+	Mou hlavní motivací pro vytvoření simulátoru akciové burzy je záliba v~kapitálových trzích. Spolu s touto prací se chci zorientovat v burzovním světě a~odhalit možnosti, které se zde skrývají.
+
+\section{Akciová burza a burzovní systémy}
+
+	Cílem této práce je vytvořit základní verzi funkčního burzovního systému, který bude schopen od klientů přijímat obchodní příkazy na nákup a~prodej vystavených akcií. Tyto příkazy budou shromážděny na jednom místě, kde budou zpracovány pomocí standardizovaného \textit{order matching} algoritmu a~následně budou klientům přerozděleny zobchodované akcie. 
+	Burzovní systém se bude skládat z~těchto tří služeb, kterým se v práci budu postupně blíže věnovat:
+
+\begin{itemize}
+
+  \item \textbf{Market} - centrální bod systému, kde dochází ke shromáždění a vyřízení obchodních příkazů.
+  
+  \item \textbf{Broker} - prostředník mezi burzou a klienty, kterým za poplatek poskytuje možnost nakupovat a prodávat cenné papíry.
+  
+  \item \textbf{Obchodní platforma} - webové nebo desktopové prostředí, kde mohou uživatelé spravovat svůj obchodní účet, zadávat obchodní příkazy, zobrazovat si historii svých aktivit a nebo testovat obchodní strategie.
+
+\end{itemize}
+
+	Mimo tyto části bude práce obsahovat službu zajišťující sběr a poskytování historických dat. Jejím úkolem bude uchovávat záznamy o historickém vývoji cen a~\textit{volume} (zobchodovaném objemu) akcií, a přes veřejné API pak tyto data poskytovat v agregované podobě třetím stranám. V reálném světě ji lze přirovnat například ke službám \fnurl{Yahoo Finance}{http://finance.yahoo.com/}, \fnurl{Google Finance}{http://www.google.com/finance} a~nebo z~těch komerčních například k \fnurl{IQFeed}{http://www.iqfeed.net}. V této práci bude použita především pro kreslení grafů zobrazujících pohyb ceny, \textit{volatility} (kolísavosti ceny akcie) a zobchodovaném objemu daného aktiva. V reálném světě mají však ještě jiné využití a to sice poskytování historických dat pro \textit{backtesting} (historické testování) automatických obchodních strategií.
+	
+	Další součástí bude jednoduchý automatický obchodní systém, který použiji jednak pro zátěžové testovaní burzovního systému a pak také pro generování nákupních a prodejních příkazů za účelem zvýšení \textit{likvidity} (obchodovanosti). Roboti, kteří takto obchodují na burzách jsou komplexní algoritmy, jejichž vývoj a následné testování trvá i několik let. V mé práci se proto omezím na jednoduchý algoritmus, jehož účelem nebude profitovat na akciovém trhu, ale generovat smysluplné obchodní příkazy pro již zmíněné zvýšení likvidity.
+	
+	
+\section{Zjednodušení systému}
+	
+	V této práci se omezím pouze na základní podobu burzovního systému. Reálné burzy, jako jsou například americké \fnurl{New York Stock Exchange}{http://www.nyse.com}, \fnurl{NASDAQ Stock Market}{http://www.nasdaq.com} nebo londýnská \fnurl{London Stock Exchange}{http://www.londonstockexchange.com}, na které se v této práci budu často odkazovat, jsou rozsáhlé systémy obsahující každá kolem \fnurl{3000 akcií}{http://www.nasdaq.com/screening/company-list.aspx} a dalších obchodovatelných instrumentů v podobě komodit, ETF a~derivátů (akciových indexů, futures, options atd.). Obchodní systém vytvořený v~této práci bude pro zjednodušení umožňovat pouze obchodování jednotlivých akcií. 
+	
+	Kromě obrovského počtu obchodovatelných instrumentů poskytují reálné burzy také mnoho nástrojů pro práci s obchodními příkazy. Jak bude vysvětleno v kapitole \ref{chap:analysis}, jsou jimi různé typy BUY a SELL příkazů, jako například: \textit{Limit order}, \textit{Market order}, \textit{Cancel order}, \textit{Trailing stop}, \textit{Take profit} a další. S přibývajícím počtem a variací příkazů však roste také složitost vnitřních procesů zajišťujících správné zpracování příkazů, a proto se v práci omezím pouze na Limit order a Cancel order příkazy s možností částečného vyhodnocení, které budou moci klienti použít k zadávání a rušení objednávek v systému.
+
+	Při využívání služeb reálných burz a brokerských aplikacích jsou uživatelům účtovány poplatky podle konkrétní cenové politiky daného subjektu. Protože si ale v práci kladu za cíl vytvořit pouze jednouchou podobu akciové burzy, nebudu v práci tyto poplatky dále rozebírat.
+
+\section{Rozdělení práce na systému}
+	V mé práci se zaměřím především na návrh a architekturu celé aplikace. Na  systému jsem spolupracoval s Bc. Ondřejem Fremuntem, který ve své diplomové práci\cite{Fremunt2014} navrhl databázové schéma marketu včetně \textit{stored procedur} (databázových funkcí) zajišťujících správnou procesní logiku nad uloženými daty a dále samostatnou aplikaci (v dalším textu ji budu nazývat \textit{worker}), jejímž úkolem je správné párování obchodních příkazů. Funkčnost těchto částí zde budu popisovat, pro bližší informace se však vždy budu odkazovat na výše zmíněnou diplomovou práci.
+
+
+\section{Terminologie a pojmy použité v této práci}
+	
+	Při psaní této práce  budu používat finanční terminologii a některé termíny, které jsou běžné v burzovních systémech. Seznam těchto pojmů spolu s jejich významem bude na konci textu v příloze \ref{chap:terminology}.
+
+
+\textbf{TODO} - dopsat pokracovani - J.Muller .. 
+
+\chapter{Analýza}
+\label{chap:analysis}
+
+	Tato kapitola bude sloužit jako prvotní návrh aplikace. Budou zde uvedeny základní informace o obchodních systémech, jejich vnitřní struktuře a procesech, které běží na pozadí. Bude zde popsán \textit{order matching algoritmus} zajištující správné párování obchodních příkazů a způsob jejich následného zobchodování.
+	Poté bude následovat seznam funkčních a nefunkčních požadavků tvořený systém a v další kapitole se již budu věnovat návrhu aplikace v konkrétních technologiích. 
+
+\section{Součásti systému}
+
+	Jak už bylo řečeno výše, burzovní systém se skládá ze 3 hlavních částí: \textit{Marketu}, \textit{Brokera} a \textit{Obchodní platformy}. Zároveň platí, že k marketu může být v~jednu chvíli připojeno více brokerů, a obdobně pak jeden broker může mít více uživatelů, kterým poskytuje svou obchodní platformu pro zadávání příkazů. V reálném světě je toto ještě složitější. Nejen že může mít klient vedený účet u více brokerů, jeden broker je ale často napojený na více marketů, aby svým klientům poskytl co největší portfolio možných instrumentů, do kterých se může investovat. V mojí práci se však omezím na základní strukturu, zachycenou na obrázku \ref{fig:stock_market_structure}, kde broker využívá služby pouze jednoho marketu a obdobně pro klienty. 
+	
+	Kromě prvků na obrázku zde vystupují i další strany. V České republice je to například \fnurl{Centrální depozitář cenných papírů}{http://www.cdcp.cz/index.php/cz/} (CDCP), ve Spojených státech amerických pak \fnurl{U.S. Securities and Exchange Commission}{http://www.sec.gov/index.htm}, což jsou organizace sledující pohyby na burzách a působící v systému ve formě kontrolora. Těmito prvky se v této práci nebudu dále zabývat a zaměřím se především na ty, co jsou na obrázku \ref{fig:stock_market_structure}.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=1\textwidth]{images/structure}
+ 	\caption[Struktura burzovního systému]{Burzovní systém se skládá ze tří hlavních částí (marketu, brokera a obchodní platformy).}
+ 	\label{fig:stock_market_structure} 	
+\end{figure}
+
+
+\subsection{Obchodní příkazy}
+\label{sec:orders}
+	Obchodní příkazy mohou být různé, podle možností dané burzy (viz seznam obchodních příkazů na londýnské LSE \cite{LSEManual} nebo americké NYSE \cite{NYSEManual}). Nejznámější a nejčastěji používané příkazy podle \cite{NYSEOrderUsage} jsou znázorněny v tabulce \ref{tab:orders}.
+
+\begin{table}[h]
+ 	\label{tab:orders}
+	\begin{center}
+		\def\arraystretch{1.5}%  1 is the default, change whatever you need
+		\begin{tabular}{|l|p{10cm}|}
+		\hline
+	    \textbf{Název} & \textbf{Popis chování} \\
+	    \hline
+	    Limit Order & Jedná se o příkaz se stanovenou nejhorší cenou, za kterou může být proveden. Pokud se cena podkladového aktiva dostane na hodnotu rovnou nebo lepší než je nastavená cena a zároveň existuje protistrana, příkaz bude proveden.
+		\\ \hline
+		Market Order & Oproti Limit order zde není nastavená pevná cena a příkaz je tak proveden za aktuální cenu aktiva na trhu.
+		\\ \hline
+	    Stop Order & Typ příkazu, který čeká v systému mimo obchodní knihu, dokud cena podkladového aktiva není horší nebo rovna nastavené ceně v příkazu. Jakmile se tak stane, příkaz je přidán do obchodní knihy a dále je s ním nakládáno jako s Market Order. Typicky se tento příkaz používá pro realizaci Stop-Lossu.
+	    \\ \hline
+	    Stop Limit Order & Příkaz opět čeká mimo obchodní knihu dokud cena aktiva není horší nebo rovna zadané ceně. Jakmile se cena dostane na tuto hranici, příkaz je přidán do obchodní knihy a je s~ním nakládáno jako s Limit Order.\\
+	    \hline
+	    \end{tabular}
+	    \caption{Seznam nejpoužívanějších obchodních příkazů.}
+	\end{center}
+\end{table}
+
+	Kromě uvedených příkazů však existuje další spousta variací. Například podle aktuální části obchodního období (opening, main season, closing) to jsou \textit{Market "On-the-Open"~Order} (MOO) nebo \textit{Market "At-The-Close"~Order} (MOC) a další.
+	
+	Obchodní příkazy mohou být navíc rozšířeny i brokerem, viz například seznam poskytovaných příkazů u brokera Interactive Brokers uvedený v \cite{IBOrders}. Je zde například \textit{Trailing Stop}, což je obdoba Stop Orderu s nastaveným chováním, kdy se nastavená hranice Stop Orderu zvyšuje, pokud cena jde nahoru. V~opačném případě se Stop Order nemění.
+	 
+	Poslední variací, kterou zde chci rozebrat je částečné a úplné zobchodování. Při zadávání obchodního příkazu můžeme chtít, aby se vyplnil celý nebo vůbec. V~takovém případě musí systém dokázat aplikovat pravidlo, že se v jednom cyklu musí nakoupit nebo prodat veškeré množství akcií z daného příkazu. V~mé práci se však budu zabývat pouze příkazy s částečným zobchodováním, kde se obchodní příkaz může vyřizovat po částech.
+	
+\subsection{Market}
+\label{fig:market_phases}
+
+	Centrálním bodem systému se stává market (neboli burza), kterému jsou od~napojených brokerů posílány obchodní příkazy. Market provádí tzv. \textit{Continuous Trading}\cite{ContinuousTradingProcess}, což je proces, jehož přesná podoba se může drobně lišit podle konkrétní burzy, v zásadě jsou zde však tyto fáze:
+	
+\begin{enumerate}
+
+  \item \textbf{Pre-Opening Phase} - První fáze, ve které jsou nashromážděny obchodní příkazy do tzv. \textit{Obchodní knihy}. Během této fáze je možné příkazy také zrušit, protože v této fázi zatím neprobíhá žádné jejich další zpracování.
+  
+  \item \textbf{Opening Auction} - Zde se projde obchodní kniha a za pomoci order matching algoritmu (popsaného dále v textu) dojde ke spárování nákupních a prodejních příkazů spolu s vypočítáním tzv. \textit{strike price} (střetávací cenu nabídky a poptávky).
+
+  \item \textbf{Main Trading Session} - V této části jsou spárované obchodní příkazy z~druhé fáze zpracovány za vypočítanou otevírací cenu a~informace o jejich zobchodování je odeslána brokerům. Nespárované příkazy zůstávají v obchodní knize pro další zpracování. Během této doby mohou brokeři zadávat nové obchodní příkazy a celý proces, tj. spočítání strike price, párování obchodních příkazů pomocí order matching algoritmu, jejich následné zobchodování a notifikování brokerů se kontinuálně opakuje až do konce této fáze.
+  
+  \item \textbf{Pre-closing Phase} - V této části dojde k~zastavení zpracování příkazů nashromážděných v obchodní knize.
+  
+  \item \textbf{Closing Auction} - Z obchodní knihy je pomocí order matching algoritmu spočítána \textit{Closing price} (zavírací cena obchodního dne). Pokud se v obchodní knize obchodní příkazy nepřekrývají (bude vysvětleno dále), vezme se poslední obchodovaná cena jako Closing price.
+  
+  \item \textbf{Trading-at-last Phase} - V této fázi mohou být zadány a zpracovány příkazy pouze za stanovenou Closing price.
+  
+  \item \textbf{After Hours Trading} - Po ukončení obchodního období (fáze 1 až 6) již nejdou zadat obchodní příkazy a jsou povolené pouze dotazy na stav příkazů a akcií.
+
+\end{enumerate}
+
+	Tento process se opakuje každý obchodní den a přesné časy jednotlivých fází se liší podle konkrétní burzy, například na americké NASDAQ se kromě vypsaných svátků obchoduje každý všední den a \textit{Main trading session} trvá v~čase od 9:30 ráno do 4:00 odpoledne místního času, viz \cite{NASDAQTradingSchedule}.
+
+\subsection{Market a zpracování obchodních příkazů}
+\label{sec:order_process}
+	Podle \ref{fig:market_phases} prochází market během jednoho dne několika fázemi, kdy probíhá obchodování a příjem příkazů. Tyto příkazy jsou zapsány do obchodní knihy, kde čekají na další zpracování. Příklad obchodní knihy s čekajícími příkazy je na obrázku \ref{fig:orderbook}. Velký důraz se zde klade na rychlost a spolehlivost, přijetí příkazu musí být proto možné i když burza provádí další procesy, jako je například zpracování obchodní knihy.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=1\textwidth]{images/orderbook}
+ 	\caption[Příkazy zapsané v obchodní knize]{Příkazy zapsané v obchodní knize.}
+ 	\label{fig:orderbook} 	
+\end{figure}
+
+\subsubsection{Sestavení kumulativních součtů}
+	
+	Pro další zpracování je potřeba v obchodní knize vytvořit tzv. kumulativní součty, kdy se seskupí příkazy stejného typu a ceny a vše se seřadí podle ceny. U poptávajících příkazů se pak sečte sestupně požadované množství a analogicky u nabízejících příkazů se nabízené množství sečte vzestupně. Kumulativní součty jsou již naznačeny na obrázku \ref{fig:orderbook_sum}.
+	
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=1\textwidth]{images/orderbook_sum}
+ 	\caption[Obchodní kniha a kumulativní součty]{Příklad seřazení příkazů v obchodní knize do kumulativních součtů.}
+ 	\label{fig:orderbook_sum} 	
+\end{figure}
+
+	Smysl tohoto řazení je, že pokud (podle obrázku) jsme ochotni koupit 2~akcie za cenu \$535, pak je koupíme i za cenu nižší. Proto je za \$520 již poptáváno celkem 9~akcií (předchozí 2 za cenu \$535 spolu s poptávkou na 7~akcií za \$520) a tak dále. Obdobně funguje i nabídka, kde akcie nabízíme za stanovenou cenu a vyšší.
+	
+\subsubsection{Order matching algoritmus}
+	
+	Po sestavení kumulativních součtů srovnáme poptávané a nabízené množství a vypočítáme maximální \textit{volume} (zobchodovatelný objem) a \textit{imbalanci} (převis objemu nabídky nad poptávkou nebo obráceně). Výpočet probíhá pomocí těchto vzorců:
+\begin{eqnarray}
+    Zobch.~objem &= &Min(Nabídka, Poptávka) \nonumber \\
+    Imbalance &= &Abs(Nabídka - Poptávka) \nonumber
+\end{eqnarray}
+
+	Výsledek řazení s vypočítaným maximálním zobchodovatelným objemem a imbalancí je na obrázku \ref{fig:orderbook_tradable_volume}.
+	
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=1\textwidth]{images/orderbook_tradable_volume}
+ 	\caption[Obchodní kniha a zobchodovatelný objem s imbalancí]{Vypočítaný zobchodovatelný objem a imbalance v obchodní knize.}
+ 	\label{fig:orderbook_tradable_volume} 	
+\end{figure}
+	
+	Následuje průchod seznamu, jehož úkolem je vybrat strike price, za kterou se zobchoduje největší objem akcií. Pro tento výběr se používá několik kritérií, které jsou následující:
+	
+ \begin{enumerate}
+ 	\item Pokud v tabulce není žádný záznam, kde by zobchodovatelný objem byl větší než 0, neproběhne žádný obchod a strike price bude cena z~předchozího cyklu.
+
+ 	\item Pokud v tabulce existují řádky u kterých může obchod proběhnout, vezme se ten, kde je největší zobchodovatelné množství.
+
+ 	\item Pokud je více řádků, které mají stejné maximální zobchodovatelné mno- žství, porovná se jejich imbalance a vybere se ten s nejnižší imbalancí.
+ 	
+ 	\item Pokud existuje více řádlků s maximálním zobchodovatelným objemem a nejmenší imbalancí, použijeme čtvrté kritérium pro výběr a sice směr imbalance. U těchto řádků porovnáme počet nabízených a poptávaných akcií. Pokud je u všech více poptávaných akcií než nabízených, algoritmus zvolí vyšší možnou cenu. V opačném případě (větší nabídka než poptávka) zvolí se nižší cena.
+ 	
+ 	\item Pokud mají řádky opačný směr imbalance, vybere z vyhovujících ty s~nejmenší a největší cenou a ty zprůměruje. Protože burza má přesně stanovenou \textit{tick size} (granularitu ceny), zprůměrovaná cena  se zaokrouhlí směrem k ceně z předchozího cyklu.
+
+\end{enumerate}
+	
+	Pomocí tohoto algoritmu se vypočítala strike price představující cenu následujícího obchodu a objem udávající počet akcií, které budou zobchodovány. Z~příkladu na obrázku \ref{fig:orderbook_tradable_volume} by se podle kritérií výše vybral třetí řádek  (vyznačený červeným písmem), strike price by byla \$505 a objem by byl 20 akcií.
+	
+\subsubsection{Párování a zobchodování obchodních příkazů}
+
+	Před dokončením cyklu je potřeba spárovat obchodní příkazy a odeslat brokerům notifikaci o jejich vyhotovení. Párování příkazů se provádí tak, že se vezmou postupně nákupní příkazy od nejvyšší ceny a k nim se přikládají prodejní příkazy s nejnižší cenou v odpovídajícím množství. Toto se opakuje, dokud nezobchodujeme objem spočítaný v předchozím kroku. Zároveň tím zajistíme, že nabídky s nejlepší cenou budou vždy upřednostněny.
+	
+	Pokud se při párování za danou cenu může vzít více příkazů, upřednostní se ten, který je v systému nejdelší dobu.
+	
+	Podle tohoto postupu se může stát, že na jeden nákupní příkaz se složí více prodejních příkazů a obráceně. Možné je i to, že se příkaz uspokojí jen z části. V takovém případě se odešle brokerovi informace o vyřízené části a zbytek příkazu zůstane v obchodní knize do příštího cyklu. Těmto příkazům, které mohou být vyřízeny jen částečně se říká příkazy s částečným zobchodováním a byly již probrány v sekci \ref{sec:orders}.
+
+	Příklad párování obchodních příkazů z předchozího příkladu je na obrázku \ref{fig:order_matching} (některé příkazy, u kterých nedojde k párování, byly schovány pro úsporu místa).
+	
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.6\textwidth]{images/order_matching}
+ 	\caption[Párování obchodních příkazů v obchodní knize]{Párování obchodních příkazů v obchodní knize.}
+ 	\label{fig:order_matching} 	
+\end{figure}
+
+
+	Po spárování se odešle notifikace o provedených obchodech patřičným brokerům a tím zpracování jednoho burzovního cyklu končí.
+
+\subsection{Broker}
+
+	Broker je prostředníkem mezi svými klienty a burzou, kde probíhají veškeré obchody. Svým klientům poskytuje obchodní platformu, kde mohou zadávat a~spravovat obchodní příkazy spolu se svým účtem. S jeho jeho pomocí na cílové klienty nejsou kladeny takové požadavky a regule, jako jsou na samotné brokery. Jedná se především o zajištění \textit{solventnosti} a neustálý dohled státních úřadů, které by jinak klienti museli podstoupit, kdyby chtěli obchodovat na burze přímo.
+
+\subsubsection{Komunikace s burzou a FIX protokol}
+\label{sec:fix_protocol}
+	
+	Klíčovou součástí systému brokera je komunikace s burzou, která probíhá nejčastěji pomocí Financial Information Exchange (FIX) protokolu. Historie tohoto protokolu sahá do roku 1992, kdy byl představen jako nadstavba TCP protokolu s maximálním důrazem na co nejmenší přenášený objem. Pro svou otevřenou specifikaci a nízký objem přenášených dat (tím pádem i rychlost) si získal velkou oblibu u finančních institucí. Mnoho z těchto společností také přispívá k jeho vývoji a úpravám pro současné potřeby, viz \cite{FIXAbout}.
+	
+	FIX protokol obsahuje tři základní skupiny příkazů, jimiž jsou:
+
+\begin{itemize}
+	\item \textbf{Administrační příkazy} - příkazy používané pro správu spojení mezi uzly, jako například \textit{hearthbeat}.
+	
+	\item \textbf{Aplikační příkazy} - příkazy používané pro obchodování (\textit{New Order}, \textit{Cancel Order}, \textit{Order status} atd.).
+
+	\item \textbf{Bezpečnostní příkazy} - jsou zde především příkazy poskytující authentizaci (\textit{Login} a \textit{Logout} příkazy).
+	
+\end{itemize}
+	
+	Jeden příkaz se pak sestává z dvojic klíč-hodnota oddělených ASCII znakem \#001, kde klíč je reprezentován jako číslo, pro minimalizaci přenášeného objemu. Příkaz obsahuje tři části:
+	
+	
+\begin{itemize}
+	\item \textbf{Header} - obsahuje informace o spojení, verzi protokolu, typu a délce zprávy a podobně.
+	
+	\item \textbf{Body} - část nesoucí vlastní informace o příkazu, jako je jeho typ a na tom závislé další infomace (cena, množství, podkladové aktivum apod.).
+
+	\item \textbf{Footer} - obsahuje kontrolní součet zprávy pro ověření integrity.
+	
+\end{itemize}
+	
+	Obchodní příkaz zakódovaný a poslaný FIX protokolem pak vypadá například takto (Netisknutelný ASCII znak \#001 byl nahrazen za znak |):
+
+\begin{lstlisting}
+	8=FIX4.2|9=0132|35=D|57=EXEC|34=2|49=BROKER|56=SB10|
+	52=20100315-17:45:20|Ł\textbf{55=AAPL}Ł|Ł\textbf{40=2}Ł|Ł\textbf{38=200}Ł|21=2|
+	11=oId0|60=20100315-17:45:20|54=1|Ł\textbf{44=109.90}Ł|10=097Ł\\Ł
+\end{lstlisting}
+
+	V příkladu výše je zakódován Limit Order příkaz (pomocí dvojice 40=2) na nákup 200 akcií (38=200) společnosti Apple Inc. (55=AAPL) za cenu \$109.90 (44=109.90). Dekódování a přehledné zobrazení zprávy je možné na adrese \url{http://fixparser.targetcompid.com/} a bližší informace k FIX protokolu jsou například v manuálu americké burzy NASDAQ \cite{FIXManual}.
+	
+
+\subsection{Obchodní platforma}
+	
+	Obchodní platformou se myslí uživatelský portál, kde mohou klienti brokera zadávat obchodní příkazy na nákup a prodej akcií, komodit a dalších nabízených aktiv. Jedná se o desktopové, online a v poslední době také mobilní aplikace poskytované brokerem, ale i nezávisle třetími stranami.
+
+	Příkladem z reálného světa mohou být desktopové \fnurl{MetaTrader}{http://www.metaquotes.net/en/metatrader4}, \fnurl{Amibroker}{http://amibroker.com/} nebo online poskytovaný \fnurl{WebTrader}{http://gre.wgw.interactivebrokers.com/webtrader/servlet/login} od Interactive Brokers a spousta dalších. 
+
+	Komunikace s brokerem probíhá různě podle konkrétního brokera, typicky se však jedná o nějakou formu REST API, RPC a nebo FIX protokolu vysvětleného výše v \ref{sec:fix_protocol}.
+
+\subsubsection{Zobrazení burzovních dat v grafu}
+\label{sec:stock_charts}
+
+	Klíčovou službou poskytovanou bezesporu každou obchodní platformou je zobrazení historického vývoje ceny a zobchodovaného množství v grafu. Je zde několik typů grafů, z nichž se zaměřím především na ten nejjednodušší lineární graf a poté, pro burzovní systémy tolik typický, svícový graf.
+	
+	Svícové grafy a jejich zobrazení ceny bude důležité pro pochopení textu v~další kapitole, proto se jim teď budu krátce věnovat.
+	
+	Osa X na grafu stejně tak, jako u lineárních grafů vyobrazuje čas a na ose Y je pomocí sloupců vidět zrealizovaný objem akcií. Kromě toho jsou v~grafu zakresleny ještě svíčky, které vyobrazují cenu a~její změnu ve zvoleném timeframu\footnote{Časový úsek.}. Příklad svícového grafu je na obrázku \ref{fig:chart_candlestick}.	
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=1\textwidth]{images/candlechart}
+ 	\caption[Svícový graf zobrazující historický vývoj ceny a objemu]{Svícový graf akcie AMG zobrazující historický vývoj ceny a zobchodovaného objemu. [dostupný z \cite{CandleStickChart}]}
+ 	\label{fig:chart_candlestick} 	
+\end{figure}
+	
+	Každá svíce představuje nastavený \textit{timeframe} (časový úsek), naptříklad 1~minutu, 5~minut, den, týden, atd. a je složena ze 4 cen, kterými jsou:
+		
+ \begin{itemize}
+
+ 	\item Open (O) - otevírací cena v timeframu
+
+ 	\item High (H)- nejvyšší cena v timeframu
+
+ 	\item Low (L)- nejnižší cena v timeframu
+
+ 	\item Close (C)- uzavírací cena v timeframu
+
+\end{itemize}
+		
+	Svíčky jsou pak ještě černou a bílou (nebo také červenou a zelenou) barvou rozlišeny na klesající (cena Open je výše jak cena Close) a stoupající (cena Open je níže než cena Close). Zobrazení těchto čtyř cen na svíčkách je znázorněno na obrázku \ref{fig:chart_candle}.
+	
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.6\textwidth]{images/candlestick}
+ 	\caption[Význam jednotlivých částí svíček ve svícovém grafu.]{Ceny u stoupající (bíle) a klesající (černé) svíčky na svícovém grafu. [dostupný z \cite{CandleStickChart}]}
+ 	\label{fig:chart_candle}
+\end{figure}
+
+	Na lineárních grafech je oproti svícovým zobrazen pouze zobchodovaný objem a Close cena v daném timeframu.
+	
+	V práci budu pro obchodní platformu tvořit také náhledy historických dat v těchto dvou grafech a jak bude dále popsáno, budu řešit také agregaci dat do  čtveřice Open, High, Low a Close cen v daném timeframu.
+	
+\section{Požadavky}
+	
+	Podle popisu systému výše jsem vytvořil následující seznamy funkčních a nefunkčních požadavků, na které budu při vývoji klást důraz.
+
+\subsection{Funkční požadavky}
+	
+	Funkční požadavky jsou nároky na funkčnost systému a říkají, jaké funkce systém musí mít. Z těch hlavních jsou to především tyto:
+
+\begin{itemize}
+
+  \item \textbf{Vytvoření záznamu akcie na burze} - Systém musí umožnit přidání nové akcie na burze, se kterou lze následně obchodovat.
+
+  \item \textbf{Emise akcií} - Systém musí umožnit \textit{emisi} (prvotní vypsání) nových akcií.
+
+  \item \textbf{Registrace brokera} - Systém musí v aplikaci marketu umět registrovat brokera, který se následně pomocí přihlašovacích údajů může připojit k~burze.
+
+  \item \textbf{Registrace a přihlášení uživatele} - Systém musí umožnit registraci u aplikace brokera a následné příhlášení uživatelům do obchodní platformy.
+  
+  \item \textbf{Úprava účtu klienta} - Systém musí umožnit uživatelům upravovat jejich účty a měnit hesla.
+  
+  \item \textbf{Zadávání obchodních příkazů} - Systém musí umožnit přihlášeným uživatelům zadávat obchodní příkazy na nákup a prodej akcií a příkaz na zrušení přechozího příkazu.
+  
+  \item \textbf{Zobrazení stavu akcií} - Systém musí umět zobrazit aktuální stav akcií. Stavem akcií se myslí jejich aktuální cena, zobchodovaný objem a jejich vývoj v grafu.
+  
+  \item \textbf{Historie obchodů} - Systém musí umět zobrazit historii klientem provedených obchodů a odeslaných příkazů.
+
+\end{itemize}
+
+
+\subsection{Nefunkční požadavky}
+\label{sec:requirements2}
+
+	Nefunkční požadavky říkají, jaké musí mít systém vlastnosti. Nefunkčními požadavky pro tvořený burzovní systém jsou:
+
+\begin{itemize}
+
+  \item \textbf{Komunikace mezi prvky v systému} - Prvky v systému si musí umět vyměňovat zprávy pomocí komunikačního rozhranní. Tato komunikace musí být spolehlivá a nesmí docházet ke ztrátě dat.
+
+  \item \textbf{Příjem obchodních příkazů} - Systém musí umět od klientů přijmout a uložit obchodní příkazy.
+
+  \item \textbf{Zpracování obchodních příkazů} - Systém musí umět zpracovat na-shromážděné obchodní příkazy a následně odeslat vyrozumění klientům.
+
+  \item \textbf{Anonymizace obchodních stran} - Poptávající strana by po provedení obchodu neměla znát protistranu, která se podílela na obchodu a~obráceně.
+
+  \item \textbf{Spolehlivost a perzistence} - Systém musí být perzistentní - jednou přijatý a potvrzený příkaz musí být v systému i po případném pádu. Obchodní příkazy se tak nesmí nikam ztratit. Všechny operace s penězi musí být spolehlivé a nesmí se stát, že by například některé úpravy klientského peněžního účtu proběhly s chybou a klientům se tak chybně strhli nebo naopak přičetli finance.
+
+  \item \textbf{Rychlost} - Na cestě při vyřizování příkazu nesmí dojít k žádnému zdržení, klientský systém i broker nesmí příkazy nijak pozastavovat.
+
+  \item \textbf{Stabilita a zotavení po chybě} - Burzovní systém musí být stabilní a neměl by padat. Při případném pádu se musí obnovit do stavu před pádem.
+
+  \item \textbf{Škálovatelnost} -Při větším počtu obchodovaných akciových titulů může docházet k nárůstu času potřebného pro jejich zpracování a systém by tak měl být škálovatelný pro případné rozložení zátěže mezi více uzlů.
+
+  \item \textbf{Bezpečnost} - Posledním zde zmíněným avšak neméně důležitým požadavkem je bezpečnost. Aplikace pracuje s penězi svých uživatelů a neměla by tak v žádném případě umožnit neoprávněnou modifikaci uživatelských údajů nebo únik citlivých informací.
+
+\end{itemize}
+
+\chapter{Návrh}
+\label{chap:design}
+
+	V této kapitole se budu zabývat nejprve technologiemi, které jsem zvolil pro stavbu systému a také důvodem, který mě k jejich výběru vedl. Poté bude následovat návrh jednotlivých stavebních bloků a popis jejich funkčnosti.
+
+\section{Použité technologie}
+	
+	Použité technologie jsem volil tak, aby poskytovaly potřebnou funkcionalitu pro vytvářenou aplikaci a byly dostupné zdarma pro nekomerční účely. Ne všechny však svými možnostmi byly úplně dostatečné, přidal jsem proto jejich krátké zhodnocení také do závěru této práce.
+	
+	Jak bude vidět v následující sekci \ref{sec:system_structure}, jednotlivé prvky v systému jsem rozdělil na Frontend a Backend. U každé části uvedu použité technologie a~důvod jejich výběru.
+
+\subsection{Frontend}
+	
+	Pro realizaci Frontendu jsem zvolil JavaScriptový framework \fnurl{AngularJS}{http://angularjs.org/}, pomocí kterého budu vytvářet webové rozhraní u jednotlivých služeb v systému.
+		
+	Na Frontendu dále použiji grafickou knihovnu \fnurl{HighCharts}{http://www.highcharts.com}, která se svým modulem \fnurl{HighStock}{http://www.highcharts.com/products/highstock} umí vytvářet burzovní grafy. Protože chci, aby byla aplikace použitelná i po UX stránce, využiji pro obchodní platformu již vytvořenou designovou šablonu \fnurl{AdminLTE}{http://almsaeedstudio.com/AdminLTE/} od Almsaeed Studio. Hlavní zmíněné technologie dále rozepíši podrobněji.
+	
+\subsubsection{AngularJS}
+\label{sec:tech_angular}
+	AngularJS je JavaScriptový framework určený pro tvorbu webových Single Page Aplikací (SPA) a za dobu svého vývoje si získal majoritní postavení na poli webových frontend frameworků. Využiji jej proto při realizaci obchodní platformy pro cílové uživatele obchodující na burze, a také k vytvoření rozhranní u každé služby v systému, jehož úkolem bude přehledné zobrazení aktuálního stavu služby.
+	
+	Použití této technologie a rozdělení aplikace na frontend a backend pozitivně přispěje k snížení objemu dat přenášených mezi uživateli a serverem. Při prvním načtení se uživateli do prohlížeče stáhne celá aplikace, její dynamika a obecné prvky, jako je například menu, layout nebo styly a následně se na~pozadí provádí už jen dotazy na serverovou API k načtení konkrétních dat pro danou stránku. Nedochází tak ke zbytečnému stahování stejného obsahu při načtení nových stránek, jak by tomu bylo u klasických webových aplikací.
+		
+\subsubsection{HighCharts a HighStock}
+
+	Při výběru webového nástroje schopného generovat grafy jsem kladl hlavní důraz na to, aby knihovna uměla vytvářet svícové grafy (popsány v sekci \ref{sec:stock_charts}), které jsou tolik typické pro burzovní systémy. Protože bude služba poskytující historická data agregovat záznamy po jedné sekundě, měla by knihovna být rychlá při práci s velkým počtem záznamů a umožňovat jejich další agregaci po minutách, hodinách, dnech atd.
+		
+	Knihovna HighStock má kromě výše zmíněných funkcí také spoustu dalších volitelných nastavení (pro zobrazení popisků, spojení různých typů grafů do jednoho a podobně), a proto jsem jej vybral a použil v mé práci pro kreslení grafů.
+	
+\subsection{Backend}
+	
+	Pro psaní backendu aplikace jsem vybral relativně mladou technologii \fnurl{Node.JS}{http://www.nodejs.cz/}, která umožňuje psát serverové aplikace v jazyce JavaScript. Tuto technologii popíšu blíže v jedné z následujících sekcích, protože \textit{event driven architektura} (architektura řízená událostmi), kterou přináší, má některé výhody pro vytvářený systém.. Kromě Node.JS použiji také webový server \fnurl{Nginx}{http://nginx.org/}, který bude v práci vystupovat jako proxy server a v kapitole \ref{chap:tunning} popíši jeho použití ve formě load balanceru.
+	
+\subsubsection{Node.JS}
+\label{sec:nodejs}
+
+	Node.JS je relativně mladá technologie, vyvýjená od roku 2009. První verze vyšla teprve v roce 2011 a od této doby si získává na velké oblibě hlavně použitím všeobecně známého programovacího jazyku JavaScript, pomocí kte- rého lze nyní psát internetové aplikace na serveru. Hlavní výhodou této technologie je událostmi řízená architektura umožňující asynchronní programování pro efektivní využití zdrojů v počítači.
+	
+	Pro zpracování JavaScriptu byl použit emulátor \fnurl{V8}{https://code.google.com/p/v8/} vyvinutý společností Google vzatý z internetového prohlížeče Google Chrome. Protože emulátor obsahoval mnoho zbytečností, byly některé části odebrány, refaktorovány a~některé naopak přidány. Z těch zásadních změn je zde odebrání funkcí pro práci s DOM elementy v HTML stránce a naopak přidání knihovny pro práci se souborovým systémem a~síťovou vrstvou. Pomocí toho lze v Node.JS pracovat se síťovými protokoly a vytvářet nad nimi například webový server, což bude i obsahem této práce. Mnoho modulů této technologie je psáno v jazyce C/C++ a zkompilováno přímo do strojového kódu, čímž Node.JS získal na~rychlosti a~tím pak i na oblibě.
+	
+	Základní ideou v této technologii je asynchronní zpracování požadavků na~\textit{I/O operace} (vstupně/výstupní operace), jak je naznačeno na obrázku \ref{fig:async_vs_sync}.
+
+\begin{figure}[h]
+	\includegraphics[width=1\textwidth]{images/node_sync_vs_async}
+ 	\caption[Srovnání asynchronního a synchronního zpracování]{Srovnání synchronního a asynchronního zpracování dvou I/O operací.}
+ 	\label{fig:async_vs_sync} 	
+\end{figure}
+
+	Obrázek obsahuje srovnání synchronního a asynchronního přístupu na~dvou I/O operacích, kterými může být práce s databází, čtení ze souborů, komunikace po síti atd. U synchronního modelu se operace zpracovávají za sebou a~každá nová I/O operace se tak zpracovává až když je předchozí dokončena. Při zpracování více takových operací dochází k mnoha drobným čekáním, což se snaží odbourat právě asynchronní model se svým \textit{I/O non-blocking} zpracováním. Pokud jsou na sobě dvě I/O operace nezávislé, dají se zpracovat asynchronně tím, že se obě odešlou najednou a ve zpracování se bude pokračovat až budou obě vyřízeny. Nedochází zde proto k takovému plýtvání časem jako u synchronního modelu a naopak jsou zde lépe využita I/O zařízení. 
+	
+	Například HTTP požadavek na webovou stránku se typicky skládá z mnoha I/O operací a pomocí asynchronního modelu tak lze ušetřit čas při jejich zpracovávání a tím zvýšit počet zpracovaných požadavků za jednu sekundu. U event driven architektury se navíc nevytváří pro každý požadavek nové vlákno/proces (které stráví mnoho času čekáním, viz výše) a tím se ušetří systémové prostředky, protože se nevytváří vždy nové prostředí pro běh vlákna, ale dojde pouze k vytvoření události a tím i zavolání obslužné funkce, což opět přispělo k snížení času potřebného na zpracování jednoho požadavku.
+	
+	Příkladem nasazení technologie Node.JS do ostrého provozu a následným pozitivním zvýšením výkonu může být například služba \fnurl{PayPal}{https://www.paypal.com}, která použitím této technologie snížila čas zpracování jednoho požadavku o 35\% a~tím zvýšila počet zpracovaných požadavků až na dvojnásobek oproti staré verzi aplikace psané v Javě, viz \cite{WebNodeJSPayPal}.
+
+
+\begin{figure}[h]
+	\includegraphics[width=0.9\textwidth]{images/node_event_loop}
+ 	\caption[Funkcionalita hlavního threadu v technologii Node.JS]{Zobrazení hlavního threadu, který zpracovává seznam eventů v event loop. [Zdroj: \cite{NodeLoop}]}
+ 	\label{fig:event_loop} 	
+\end{figure}
+
+	Na obrázku \ref{fig:event_loop} je zobrazeno požadavků uvnitř technologie Node.JS. Je zde jeden hlavní thread, který obsahuje seznam eventů (příchozí HTTP požadavky, výsledky I/O operací apod.), které postupně prochází a zpracovává jejich \textit{callback funkce} (funkce zavolaná při dokončení operace). Při volání asynchronní I/O operace se práce předá vedlejšímu threadu, který při dokončení úkolu vloží výsledek operace spolu s callback funkcí do seznamu eventů a~hlavní thread pak pomocí \textit{event loop} (periodického procházení eventů) převezme výsledek a~zavolá callback funkci, která jej zpracuje.
+	
+	Z obázku vyplývá také to, že hlavní zpracování probíhá pouze v jednom vláknu, což je cena za jednoduchost event driven architektury. Při zpracování více vlákny by systém neúměrně narostl na složitosti kvůli potřebě zamykání sdílených prostředků a synchronizaci, a proto je z důvodu jednoduchosti hlavní zpracování řízeno pouze jedním jádrem. Otázkou škálování na více vláken se budu zabývat v kapitole \ref{chap:tunning}.
+	
+	Využití pouze jednoho hlavního vlákna však přináší ještě jeden důležitý fakt, a to sice, že při zpracování tzv. \textit{CPU intensive task} (úkolů náročných na výpočet) nemůže hlavní vlákno zpracovávat jiné události. Příkladem takového úkolu v burzovním systému je order matching algoritmus popsaný \ref{fig:order_matching}. Při jeho zpracování by došlo k zablokování hlavního threadu a nebylo by možné zpracovávat jiné požadavky (přijmutí obchodního příkazu, odeslání notifikace brokerovi, atd.) a proto budou tyto úkoly delegovány na externí službu (workery) z diplomové práce Ondřeje Fremunta \cite{Fremunt2014}.
+	
+	Node.JS je open source technologie s mnoha rozšířeními dostupnými na~strá- nce \fnurl{NPM}{https://www.npmjs.com/}, z nichž některé budou použity i v této práci. Pro burzovní systém bude Node.JS představovat vnitřnosti aplikačního serveru a~bude fungovat jako hlavní řídící prvek burzy rozdělující práci jednotlivým workerům.
+
+\subsubsection{Express}
+
+	Pro tvorbu webového administračního rozhranní a zpracování HTTP požadavků využiji framework \fnurl{Express}{http://expressjs.com/}, který bude použit pro tvorbu REST API rozhranní, přes které bude proudit komunikace s dalšími částmi systému.
+	
+\subsubsection{Nginx}
+	
+	Při škálování aplikací psaných v technologii Node.JS se typicky spustí více instancí na různých portech, které se zastřeší pomocí \textit{load balanceru}, který mezi ně rozděluje jednotlivé příchozí požadavky. Pro základní verzi burzovního systému použiji technologii Nginx pouze jako \textit{proxy}, která umožní přistupovat na~Node.JS aplikaci spuštěnou na nějakém portu jednodušše pomocí doménové- ho jména. V kapitole \ref{chap:tunning} pak popíši, jak se dá Nginx nastavit tak, aby v systému vystupoval jako load balancer. 
+
+\subsection{Databáze}
+	
+	V práci O. Fremunta \cite{Fremunt2014} byla marketu vytvořena databázová vrstva v technologii \fnurl{PostgreSQL}{http://www.postgresql.org/}. Ta bude sloužit pro ukládání a práci s obchodními příkazy a bude proto použita jako hlavní databázová vrstva marketu.
+	Pro ukládání dat v systému brokera, automatických obchodních systémů a služby poskytující historická data jsem vybral databázi \fnurl{MongoDB}{http://www.mongodb.org/} a pro uložení session připojených uživatelů k serverům brokera se bude starat key-value databáze \fnurl{Redis}{http://redis.io/}.
+	
+	
+\subsubsection{PostgreSQL}
+
+	PostgreSQL je open-source objektově relační databáze\cite{ORDBMS} poskytovaná s licencí MIT. Jedná se o databázi s dlouhou historií a rozsáhlým množstvím podporovaných funkcí, z nichž pro systém marketu budou využity především stored procedury zajišťující práci s obchodními příkazy.
+		
+	Další informace o výběru a realizaci databázové vrstvy marketu jsou v již zmíněné diplomové práci \cite{Fremunt2014}.
+
+\subsubsection{MongoDB}
+\label{sec:mongo}
+
+	MongoDB je dokumentově orientovaná databáze, která, oproti tabulkám u~relačních databází, uchovává záznamy v tzv. kolekcích složených z jednotlivých dokumentů. Dokumenty obsahující data uložená ve formátu \fnurl{BSON}{http://bsonspec.org/} nemají pevnou strukturu, což pozitivně přispívá k rozšířitelnosti systému, protože není potřeba upravovat schéma databáze při změně ukládaných dat.
+	
+	Klíčovou vlastností MongoDB databáze rychlost a výkon, o což se stará především podpora shardingu na více fyzických strojů a agregačního příkazu map-reduce, který bude vysvětlen dále v textu. Ke zvýšení výkonu přispívá také možnost zanoření dokumentů, kdy za cenu duplikace dat není potřeba tvořit komplexní dotazy využívající relace, jako tomu je u relačních databází. Protože MongoDB relace neumí, je potřeba tento typ příkazu řešit na aplikační vstvě, což může snížit výkon, viz \cite{RBDMSVsNoSQL}, a tak je použití MongoDB databáze výhodné v aplikacích, kde se používají především jednoduché nerelační dotazy.
+	
+	Protože budu aplikační server jednotlivých služeb psát v~technologii Node.JS, kde se dají data cachovat a nebude tak potřeba v databázi volat složité relační příkazy, využiji MongoDB jako databázovou vrstvu pro aplikaci brokera, automatického obchodního systému a služby poskytující historická data. 
+	
+
+\subsubsection{Redis}
+	
+	Třetí a poslední databází využitou v burzovním systému bude key-value data- báze Redis, která byla původně navržena jako in-memory databáze\footnote{Databáze pracující s daty pouze v RAM paměti.}, nyní však obsahuje možnosti periodického ukládání dat na disk a tím i částečnou perzistenci dat. Jedná se o velmi rychlé a jednoduché úložiště pracující pouze s dvojící klíč-hodnota, kde klíčem může být například session ID a hodnotou budou informace o uživateli, což bude využito pro ukládání uživatelských session v systému brokera. Více o Redis databázi spolu se srovnáním výkonnosti oproti dalším úložistím je v \cite{NoSQLPerformance}.
+	
+	V Node.JS aplikacích se databáze Redis používá také při škálování systému, kdy se spustí více aplikačních serverů a na pozadí se spojí pomocí Redis databáze pro společnou komunikaci a ukládání sdílených dat.
+	
+\subsection{Komunikace}
+
+	Pro komunikaci mezi obchodní platformou a brokerem bude využita technologie \textit{AJAX} (Asynchronous JavaScript and XML) spolu s \textit{XMLHttpRequest} požadavky fungujícími na protokolu HTTP/HTTPS. Protože v době psaní této práce neexistuje pro technologii Node.JS spolehlivá knihovna realizující FIX protokol popsaný v \ref{sec:fix_protocol} a jeho tvorba spolu s navrhovanou aplikací by přesahovala rozsah této práce, použiji technologii Socket.IO  pro propojení dalších prvků v systému, kterými jsou broker, burza, roboti a služba poskytující historická data. Obě služby nyní popíšu blíže.
+	
+\subsubsection{AJAX a XMLHttpRequest}
+	
+	Technologie AJAX je spojení webových technologií, jako je dynamické HTML, CSS styly, DOM model jazyk JavaScript a XMLHttpRequest rozhranní pro vytvoření dynamických a interaktivních stránek. Pomocí toho lze vytvořit webovou stránku, která bude na pozadí asynchronně komunikovat se serverem a nebude tak potřeba refresh stránky při každém požadavku.
+	
+\subsubsection{Socket.IO}
+\label{sec:socket_io}
+	Obchodní platforma bude obsahovat notifikace, které klienta upozorní, pokud se stane nějaká akce na burze. Akcí může být vyexpirování nebo vyřízení příkazu. Pro realizaci těchto notifikací využiji technologii \fnurl{Socket.io}{http://socket.io/}, která umožňuje vytvořit \textit{Push notifikace} mezi serverem a klientem. Podle \cite{PushPull} je takovýto způsob notifikací úspornější na posílané požadavky (zprávy se posílají pouze ve chvíli, kdy je v systému notifikace), ale zato je systém náročnější na CPU kvůli velkému počtu neustále připojených uživatelů.
+	
+	Socket.IO umožňuje navázat takovéto spojení, kde server může odesílat klientům notifikace zakódované do formátu JSON. Ten má velmi blízko k programovacímu jazyku JavaScript, který bude použit pro tvorbu aplikace a~není zde proto třeba žádného speciálního překladače pro rozparsování posílané zprávy. Další pozitivní vlastností na Socket.IO je, že umí navázat spojení s~klienty více způsoby podle možností prohlížeče, z nichž automaticky podle své interní heuristiky zvolí vždy tu nejlepší variantu a je tak kompatibilní i se staršími verzemi prohlížečů. Kromě propojení webového prohlížeče lze využít Socket.IO i~k propojení dvou a více Node.JS serverů nebo aplikací psaných v~jiných jazycích díky, u kterých je dostupná Socket.IO knihovna. V~této práci jej proto použiji pro realizaci komunikační vrstvi zajišťující posílání Push notifikací mezi serverem a klientem.
+	
+\section{Obecné části návrhu}
+\label{sec:design_basics}
+	
+	Protože jsou všechny služby systému tvořeny v technologii Node.JS a programovacím jazyce JavaScript, budou mít některé společné znaky, které popíšu v této sekci.
+	
+\subsection{Použité datové typy}
+	
+	Základní datové typy v jazyce JavaScript jsou \textit{String}, \textit{Number} a \textit{Boolean}. Pro práci s \textit{tickery} (zkratkami akcií) budu používat typ String. U identifikátorů položek v databázi, obchodovaných objemů a cen použiji typ Number, u~kterého dochází k automatické konverzi mezi celočíselným typem a typem s~plovoucí desetinnou čárkou. Zároveň je dostatečně veliký, aby v sobě dokázal obsáhnout všechny používaná typy používaných čísel a proto jej použiji při práci s čísly v tvořeném systému.
+	
+	Ceny akcií mají v burzovních systémech pevně stanovenou tick size, což je nejmenší možný přírůstek ceny. Většinou se jedná o setiny nebo tisíciny jednotky a v práci této práci bude použita tick size 0.001. Typ Number má pohyblivou desetinnou čárku s rozsahem větším, než je rozsah tick size a tak jej považuji za dostatečný k práci s cenami akcií.
+
+\subsection{Webové rozhranní}
+	
+	Pro přehledné zobrazení aktuálního stavu bude každá služba obsahovat webové rozhranní realizováno jako SPA aplikaci dotazující se na REST API pro získání informací o aktuálním stavu.
+	
+	Pro zvýšení bezpečnosti budou takto vytvořené webové aplikace komunikovat přes proxy server realizovaný v technologii Nginx s nastaveným HTTPS protokolem.
+
+\subsection{Služby v systému}
+\label{sec:system_structure}
+
+	Na obrázku \ref{fig:system_structure} jsou zobrazeny jednotlivé služby vystupující v systému, kterým se budu v rámci této kapitoli blíže věnovat.
+	
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=1\textwidth]{images/detail_structure}
+ 	\caption[Detailní pohled na strukturu systému]{Zobrazení detailní struktury navrhovaného systému.}
+ 	\label{fig:system_structure}
+\end{figure}
+
+	Systém obsahuje pět základních služeb, kterými jsou:
+	
+\begin{itemize}
+
+\item \textbf{Market} - Centrální místo pro zpracování obchodních příkazů.
+
+\item \textbf{Broker} - Služba zprostředkovávající klientům obchodování na burze.
+
+\item \textbf{Obchodní platforma} - Klientská aplikace pro zadání obchodních příkazů.
+
+\item \textbf{Jednoduchý automatický obchodní systém} - Automatický robot obchodující na burze.
+
+\end{itemize}
+
+\section{Market}
+	
+	Klíčovými otázkami, které jsem řešil při návrhu marketu, je způsob použití databázové vrstvy, možné stavy obchodních příkazů, synchronizace kritických procesů, realizace burzovního cyklu a v neposlední řadě také použití workerů. Návrh těchto částí nyní popíšu blíže.
+	
+\subsection{Databáze a stored procedury}
+
+	V systému marketu bude z práce O. Fremunta \cite{Fremunt2014} využito databázové schéma spolu se stored procedurami navrženými pro databázi PostgreSQL ve verzi 9.2 a vyšší. Stored procedury budou sloužit k práci s obchodními příkazy a~jejich použití zajistí transakční zpracování, čímž se zamezí možnosti, že by zpracování příkazu z~nějakého důvodu proběhlo jen částečně (například, že by došlo k zobchodování příkazu, ale neupravilo se vlastnictví akcií v databázi).
+
+	V následujícím příkladu jsou zobrazeny dva typy volání stored procedur v~databázi PostgreSQL:
+
+\begin{lstlisting}[basicstyle={\tiny\ttfamily}, frame=single] 
+SELECT expire_order(123) as expired;
+-- 1. prikaz zavola proceduru expire_order s parametrem 123
+-- a vysledek volani bere jako elementarni datovy typ
+
+SELECT * FROM get_unnotified_trades();
+-- 2. prikaz vola proceduru get_unnotified_trades, ktera vraci strukturovana
+-- tabulkova data a je proto volana jako pri cteni z tabulky
+\end{lstlisting}
+	
+	V prvním případě se očekává jednoduchá návratová hodnota (číslo, boolean, string, atd.) a v druhém případě lze pracovat se složitější strukturou v podobě tabulkových dat.
+
+	Při práci s daty v databázi bude market využívat pouze již zmíněné stored procedury navržené v diplomové práci \cite{Fremunt2014}.
+	
+\subsection{Obchodní příkaz}
+	
+	Systém marketu bude podporovat dva typy příkazů:
+
+\begin{itemize}
+
+\item \textbf{Limit Order} - Poptávající a nabízející příkaz
+	 
+\item \textbf{Cancel Order} - Příkaz pro zrušení v minulosti zadaného příkazu.
+
+\end{itemize}	
+	
+	Příkaz pro nákup a prodej akcií (\textit{Limit Order}) se bude skládat z unikátního identifikátoru, ceny, množství a id akcie, která je poptávána/nabízena.
+	
+	U příkazu pro zrušení (\textit{Cancel Order}) bude jediným údajem identifikátor příkazu, který se má zrušit.
+	
+\subsection{Stavy obchodních příkazů}
+
+	Obchodní příkaz typu \textit{Limit Order} nabývá v systému marketu během svého života (od jeho přijetí až do potvrzení notifikace o vyřízení brokerem) různých stavů, kterými jsou:
+
+\begin{itemize}
+
+\item \textbf{Přijatý} - Stav nového příkazu bezprostředně při přijetí burzou.
+
+%\item \textbf{Přijatý a potvrzený} - Pokud broker přijme potvrzení odeslané burzou o úspěšném vytvořeném nového příkazu.
+
+\item \textbf{Částečně zobchodovaný} - Pokud se příkaz zobchoduje, avšak realizovaný objem bude menší než objem uvedený v obchodním příkazu.
+
+\item \textbf{Zobchodovaný} - Pokud se příkaz zobchoduje celý.
+
+\item \textbf{Označený ke zrušení} - Pokud broker odešle pokyn ke zrušení burzou v minulosti přijatého příkazu.
+
+\item \textbf{Zrušený} - Pokud burza zruší příkaz označený ke zrušení.
+
+\item \textbf{Expirovaný} - Pokud burza automaticky zruší příkaz, který je v systému déle, jak nastavený čas.
+
+\item \textbf{Nenotifikovaný} - Pokud se čeká na brokera po potvrzení odeslané notifikace.
+
+\item \textbf{Dokončený} - Pokud broker potvrdí příjem notifikace o zrušení, expiraci nebo vyřízení příkazu.
+
+\end{itemize}
+
+	Na obrázku \ref{fig:order_state_diagram} je zobrazen stavový diagram obchodního příkazu a přechody mezi popsanými stavy.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=1\textwidth]{images/order_states}
+ 	\caption[Stavový diagram obchodního příkazu]{Stavový diagram obchodního příkazu.}
+ 	\label{fig:order_state_diagram}
+\end{figure}
+
+	Při přijetí \textit{Cancel Order} se k rušenému příkazu přidá pouze příznak na zrušení a k fyzickému zrušení příkazu dojde později, což bude popsáno v~dalších sekciích.
+
+\subsection{Práce s obchodními příkazy}
+\label{sec:crit_processes}
+	V systému marketu jsou tyto základní procesy pracující se seznamem obchodních příkazů v databázi:
+	
+\begin{itemize}
+
+\item \textbf{Přijmutí příkazu} - Uloží příkaz do databáze a odešle brokerovi potvrzení o přijetí.
+
+\item \textbf{Zobchodování příkazu} - Zapíše do databáze provedený obchod, u~obchodních příkazů podílejících se na obchodu upraví objem, který je potřeba ještě zobchodovat a odešle brokerům notifikaci.
+
+\item \textbf{Označení příkazu ke zrušení} - Přidá k obchodnímu příkazu příznak představující žádost o zrušení a potvrdí brokerovi přijetí požadavku.
+
+\item \textbf{Vyexpirování příkazu} - Vyexpiruje příkazy starší jak pevně stanovená doba a odešle brokerům notifikaci.
+
+\item \textbf{Zrušení příkazu} - Zruší příkazy s příznakem ke zrušení a odešle brokerům notifikaci.
+
+\item \textbf{Označení obchodu/příkazu za dokončený} - Pokud broker potvrdí přijetí notifikace, označí v databázi příkaz za dokončený (v případe že notifikace byla o zrušení nebo expiraci) a nebo jednotlivý obchod za notifikovaný (pokud notifikace byla o provedení obchodu).
+
+\end{itemize}	
+	
+	Ne všechny tyto procesy mohou pracovat zároveň a tak je potřeba synchronizace kritických míst, o čemž pojednává následující sekce.
+
+\subsection{Burzovní cyklus a synchronizace kritických procesů}
+\label{sec:cycle}
+	
+	Aby se obchodní příkaz nedostal do nevalidního stavu, kterým by bylo například jeho zrušení a zobchodování zároveň, obsahuje market cyklus provádějící sekvenčně jednotlivé kritické procesy, jako je vyobrazeno na obrázku \ref{fig:stock_cycle}.
+	 
+	 
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.6\textwidth]{images/stock_cycle}
+ 	\caption[Burzovní cyklus]{Kritické procesy v burzovním cyklu.}
+ 	\label{fig:stock_cycle}
+\end{figure}
+
+	Při zobchodování obchodních příkazů dojde k stáhnutí všech příkazů z~databáze a~jejich lokálnímu zpracování workerem. V tuto chvíli je potřeba neprovádět nad obchodními příkazy v databázi žádné další úpravy, jako je jejich rušení nebo expirace. Stejně tak při rušení příkazu nesmí dojít k jeho expiraci a obráceně.
+	
+	Ostatní procesy, jako je přijetí obchodního příkazu, přidání příznaku ke zrušení nebo označení za notifikovaný lze provádět kdykoliv během burzovního cyklu.
+	
+\subsection{Workeři}
+
+	Jak bylo řečeno v \ref{sec:nodejs}, hlavní zpracování aplikace psané v technologii Node.JS běží pouze v jednom vláknu. Zdlouhavé úlohy náročné na výpočet tak mohou blokovat ostatní úlohy a tím dochází ke snížení výkonu.
+	
+	Řešením tohoto problému je delegování náročných úloh na externí programy, jejichž výpočet neblokuje hlavní vlákno a~při jejich dokončení dojde k vrácení výsledku do hlavního vlákna a~vytvoření události podobně jako u~jiných I/O operací při asynchronním zpracování.
+	
+	Pro tyto potřeby bude využit worker navržený v práci \cite{Fremunt2014}, jehož úkolem bude na jeden požadavek zpracovat obchodní příkazy vždy pro jednu konkrétní akcii. Těchto workerů bude spuštěno více a market s~nimi automaticky přes TCP/IP protokol naváže spojení, které bude udržovat po celou dobu běhu systému. Pro zmenšení přenášeného objemu dat mezi marketem, workery a~databází bude každý worker napojen přímo na databázi a~od marketu obdrží pouze číselné id akcie, kterou má zpracovat. Z databáze si načte obchodní příkazy pro zpracování, pomocí order matching algoritmu spočítá nejlepší strike price a spáruje obchodní příkazy od nabídky a poptávky. Výsledné obchody uloží do databáze a~marketu odešle ve formátu JSON informaci o~výsledné ceně, zobchodovaném objemu a seznamu provedených obchodů. Návrh komunikace mezi marketem a jedním workerem je na následujícím příkladu:
+
+
+\begin{lstlisting}[basicstyle={\tiny\ttfamily}, frame=single] 
+>> Market zasle workeru Id akcie pro zpracovani obchodnich prikazu:
+123
+
+<< Worker zasle marketu informace o provedenem obchodu a jednotlive obchody:
+{
+  "info": {
+    "stockId": 123,	// id akcie
+    "price": 490.010,	// nova cena akcie
+    "totalAmount": 27,	// zobchodovane mnozstvi
+    "bid": 489.960,	// nova nejlepsi nakupni cena
+    "ask": 490.010,	// nova nejlepsi prodejni cena
+    "strikeTime": "2015-01-04 12:08:16.369181+01" // cas vypoctu
+  },
+  "trades": [{ 			// sparovane obchodni prikazy
+      "buyOrderId": 956, 	// Id poptavaciho prikazu
+      "sellOrderId": 957,	// Id nabizeciho prikazu
+      "buyerId": 3,		// Broker ktery poptavku vytvoril
+      "sellerId": 3,		// Broker ktery nabicku vytvoril
+      "amount": 9 		// Zobchodovany pocet mezi prikazy
+    },
+    ... 			// dalsi provedene obchody
+  ]
+}
+\end{lstlisting}
+	
+	Market si bude vést informace o napojených workerech a bude jim rozdělovat práci na jednotlivých akciích. Pro dosažení rovnoměrného rozvržení zátěže mezi všechny workery jim bude práce přidělována na základě prioritního plá- nování, kdy se workeru, jehož výpočet běžel nedávno, přiřadí nižší priorita než workeru, který běžel před ním a pro výpočet jedné akcie se vždy použije worker s nejvyšší prioritou.
+	
+	Připojení marketu a workeru bude probíhat tak, že worker při svém startu vytvoří TCP server, na který se market připojí. Aby se předešlo pevné konfiguraci adres jednotlivých workerů, budou workeři při svém startu dynamicky zapisovat svou adresu a port do databáze, odkud si je market bude periodicky v pevně stanoveném intervalu číst a napojovat se na nové workery. Tím se zajistí automatické napojení na všechny workery.
+	
+	Pokud se nepodaří s workerem navázat komunikace nebo dojde k výpadku spojení, zkusí se market připojit po čase znova a opakuje to dokud není překročen maximální počet pokusů o navázání spojení. Poté je adresa workera vymazána jak z interního seznamu marketu, tak i z databáze.
+
+\subsection{Market API}
+\label{sec:market_api}
+
+	Komunikace s připojenými brokery bude probíhat pomocí API vytvořené v~technologii Socket.IO (viz popis v \ref{sec:socket_io}). Ta umožňuje oboustranou komunikaci v podobě emitování událostí, které druhá strana zachytí a zpracuje. Přenášené zprávy budou zakódovány ve formátu JSON, což umožní pohodlné zpracování na obou stranách komunikace, protože se jedná o přirozený formát jazyka JavaScript, ve kterém budou jednotlivé části systému tvořeny.
+	
+	Při komunikaci mezi marketem a brokerem budou použity události popsané v tabulce \ref{tab:market_api_events}.
+
+\begin{table}[h]
+	\begin{center}
+		\def\arraystretch{1.5}%  1 is the default, change whatever you need
+		\begin{tabular}{|l|l|p{7cm}|}
+		\hline
+	    \textbf{Název} & \textbf{Emitent} & \textbf{Popis události} \\ \hline
+		connection & Socket.IO & Událost emitovaná při připojení klienta. \\ \hline
+		reconnect & Socket.IO & Při obnově přerušeného spojení. \\ \hline
+		authenticate & Klient & Vstupem jsou přihlašovací údaje klienta a výstupem výsledek přihlášení. \\ \hline
+		setOrder & Klient & Událost emitována klientem pro zadání obchodního příkazu. \\ \hline
+		cancelOrder & Klient & Událost sloužící pro zrušení obchodního příkazu. \\ \hline
+		getMarketStatus & Klient & Událost pro zjištění stavu marketu. \\ \hline
+		getStockInfo & Klient & Událost pro načtení aktuálního stavu všech akcií vedených na burze. \\ \hline
+		
+		updatedStockList & Market & Událost nesoucí data o aktuálním stavu akcií emitována marketem po každém burzovním cyklu. \\ \hline
+
+		orderProcessed & Market & Notifikace o zpracovaném příkazu. \\ \hline
+
+		orderCancelled & Market & Notifikace o zrušeném příkazu. \\ \hline
+
+		orderExpired & Market & Notifikace o expirovaném příkazu. \\ \hline
+
+		disconnect & Socket.IO & Interní událost emitovaná při ukončení spojení. \\ \hline
+		error & Socket.IO & Interní událost emitovaná při chybě. \\ \hline
+		\end{tabular}
+	    \caption{Události, na kterých Market API naslouchá.} 
+     	\label{tab:market_api_events}
+	\end{center}
+\end{table}
+
+	Při připojení brokera k API marketu (události \texttt{connection}	a \texttt{reconnect}) má broker za úkol provést nejprve přihlášení pomocí události \texttt{authenticate}. Po úspěšném přihlášení může teprve využívat ostatní klientské události popsané v tabulce.
+	
+	Z druhé strany bude market rozesílat notifikace o úpravě stavu objednávek (události \texttt{orderProcessed}, \texttt{orderCancelled} a \texttt{orderExpired}) a po každém burzovním cyklu bude pomocí události \texttt{updatedStockList} rozesílat informace o aktuálním stavu všech akcií na burze. Tím se zajistí, aby měli brokeři vždy nejaktuálnější informace o akciích, které pak mohou zobrazit svým klientům.
+	
+\section{Broker}
+
+	Broker bude představovat jednoduchý mezičlánek mezi připojenými klienty a~marketem. Svým klientů, bude pomocí vytvořeného REST API umožňovat zadávání obchodní příkazů, které po validaci odešle marketu.
+	
+\subsection{Databáze brokera}
+	
+	Pro uložení uživatelských účtů, obchodních příkazů a historie transakcí bude použita MongoDB databáze popsaná v \ref{sec:mongo}. Hlavními kolekcemi v databázi brokera budou:
+
+\begin{itemize}
+
+\item \textbf{Clients} - Obsahuje uživatelské infromace, jako je email, jméno, heslo, aktuální výše účtu.
+
+\item \textbf{ClientStocks} - Obsahuje klientovi držené akcie, jejich ticker, množství, pořizovací cenu a datum nákupu.
+
+\item \textbf{Orders} - Obsahuje seznam obchodních příkazů svých klientů.
+
+\end{itemize}
+		
+\subsection{Práce s obchodním příkazem}
+	
+	Při přijetí obchodního příkazu z klientské aplikace bude v kolekci \texttt{Orders} v~MongoDB databázi vytvořen záznam s těmito položkami:
+	
+\begin{itemize}
+
+\item \textbf{\_id (ObjectId)} - Interní id obchodního příkazu u brokera.
+
+\item \textbf{orderId (Int32)} - Id příkazu přidělené marketem při přijetí.
+
+\item \textbf{client (ObjectId)} - Interní id klienta zadávajícího příkaz.
+
+\item \textbf{date (Date)} - Datum podání příkazu.
+
+\item \textbf{ticker (String)} - Ticker akcie.
+
+\item \textbf{price (Double)} - Požadovaná cena v limitním příkazu.
+
+\item \textbf{amount (Int32)} - Počet požadovaných nebo nabízených akcií.
+
+\item \textbf{filledAmount (Int32)} - Udává kolik akcií z příkazu bylo již zobchodováno.
+
+\item \textbf{type (Int32)} - Číselný typ příkazu (0 - sell, 1 - buy).
+
+\item \textbf{expired (Date)} - Příznak, zda byl příkaz vyexpirován.
+
+\item \textbf{cancelOrder (Date)} - Příznak, zda byl na příkaz zavolán cancel order.
+
+\item \textbf{cancelled (Date)} - Příznak, zda byl příkaz zrušen burzou.
+
+\end{itemize}
+
+	Při odeslání příkazu marketu obdrží broker číselný identifikátor příkazu \texttt{orderId}, pod kterým jej market bude dále vést. Při dalších dotazech nebo v~notifikacích pak bude pouzito toto id pro další práci s příkazem.
+	
+	Při přijetí marketem odeslané notifikaci o zobchodování příkazu, broker navýší hodnotu \texttt{filledAmount} o~zobchodovaný objem a pokud se jedná o~nabízející příkaz, dojde také k navýšení finančních prostředků klienta v kolekci \texttt{Clients}. Následně dojde k vytvoření záznamu o vlastnictví akcií klientem do kolekce \texttt{ClientStocks}, který bude obsahovat tyto údaje:
+	
+\begin{itemize}
+
+\item \textbf{\_id (ObjectId)} - Interní id záznamu u brokera.
+
+\item \textbf{orderId (Int32)} - Id obchodního příkazu přiděleného marketem, z~kterého vlastnictví vzešlo.
+
+\item \textbf{ticker (String)} - Ticker akcie.
+
+\item \textbf{amount (Int32)} - Aktuální množství akcií.
+
+\item \textbf{originalAmount (Int32)} - Původní množství akcií 
+
+\item \textbf{date (Date)} - Datum vytvoření záznamu.
+
+\item \textbf{price (Double)} - Cena za kterou byly akcie pořízeny. 
+
+\item \textbf{client (ObjectId)} - Vlastník akcií.
+
+\end{itemize}
+
+	Při podání nabízejícího příkazu se nejprve ověří, zda klient má v kolekci \texttt{ClientStocks} nabízené množství akcií. Pokud ano, sníží se množství \texttt{amount} u tolika záznamů a o takové množství, aby to vyrovnalo nabízené množství a~vytvoří se nabízející příkaz.
+	
+	Pokud klient podá poptávající příkaz, ověří se, zda má dostatek finančních prostředků a pokud ano, dojde k jejich strhnutí z peněžního účtu a poté k~vytvoření a odeslání příkazu marketu.
+
+\subsection{Komunikace s marketem}
+\label{sec:broker_market_communication}
+
+	Komunikace s marketem bude probíhat přes Socket.IO protokol a předávané zprávy budou ve formátu JSON. Market API sloužící pro komunikaci mezi brokerem a marketem bylo popsáno v \ref{sec:market_api} a příklad navržené komunikace je v nasledujici ukazce:
+	
+\begin{lstlisting}[basicstyle={\tiny\ttfamily}, frame=single] 
+>> Broker emituje udalost setOrder s temito daty:
+{
+	type: 1,		// typ prikazu 1 - BUY, 0 - SELL
+	stockId: 1,		// Id akcie
+	price: 124.78,		// cena limitniho prikazu
+	amount: 5		// mnozstvi 
+}
+
+<< Market ulozi prikaz a vrati jeho unikatni Id v databazi
+{
+	id: '13'		// Id nove vytvoreneho prikazu
+}
+\end{lstlisting}
+	
+	V případě, že při ukládání dojde k chybě, vrátí market místo \texttt{id} položku \texttt{error} obsahující informace o chybě.
+	
+\subsection{Klientská REST API a CORS}
+\label{sec:broker_api}
+
+	Komunikace obchodní platformy spolu s brokerem bude probíhat přes REST API vytvořené v~Node.JS frameworku Express. Klienti budou moci využít \textit{endpointy} definované v tabulce \ref{tab:broker_api_endpoints}.
+
+\begin{table}[h]
+	\begin{center}
+		\def\arraystretch{1.5}%  1 is the default, change whatever you need
+		\begin{tabular}{|l|l|p{6cm}|}
+		\hline
+	    \textbf{Název} & \textbf{Typ}& \textbf{Popis} \\ \hline
+		login & POST & Provede přihlášení klienta k API. \\ \hline
+		registration & POST & Registruje nového klienta. \\ \hline
+		news & GET & Vrátí světové události získané z externích zdrojů. \\ \hline
+		account-info & GET,POST & Vrátí nebo upraví informace o klientovi. \\ \hline
+		account-info/password & POST & Upraví heslo klienta. \\ \hline
+		stocks & GET & Vrátí seznam všech akcií. \\ \hline
+		stocks/:ticker & GET & Vrátí detail jedné akcie podle tickeru. \\ \hline
+		my-stocks & GET & Vrátí seznam klientem držených akcií. \\ \hline
+		my-orders & GET & Vrátí seznam nevyřízených obchodních příkazů. \\ \hline
+		order/buy & POST & Vytvoří poptávající obchodní příkaz. \\ \hline
+		order/sell & POST & Vytvoří nabízející obchodní příkaz. \\ \hline
+		order/cancel & POST & Vytvoří příkaz na zrušení předcházejícího obchodního příkazu. \\ \hline
+		\end{tabular}
+	    \caption{REST API endpointy pro klientskou aplikaci.} 
+	 	\label{tab:broker_api_endpoints}
+	\end{center}
+\end{table}
+
+	Pro přístup k API se klienti budou muset nejprve přihlásit pomocí endpointu \texttt{login}, který vrátí autorizační token. Ten bude posílán při dalších požadavcích v HTTP hlavicce \texttt{Authorization} a bude tak sloužit k ověření identity uživatele při jednotlivých požadavcích.
+	
+	
+\section{Obchodní platforma}
+	
+	Obchodní platforma pro koncové uživatele bude aplikace, kde lze pohodlně zadávat obchodní příkazy, zobrazovat stav účtu a historii transakcí. Klientská aplikace bude postavena jako webová stránka, která bude s brokerem komunikovat přes uveřejněné REST API rozhranní popsané v \ref{sec:broker_api}.
+
+
+\subsection{SPA aplikace}
+	
+	Pro realizaci obchodní platformy bude použita technologie Angular.JS a webová stránka bude mít formu SPA (Single Page Application) aplikace popsané v \ref{sec:tech_angular}.
+
+
+\subsubsection{Přihlášení uživatele}
+\label{sec:login_process}
+
+	Protože se u SPA aplikací stahuje celý web při prvním klientském požadavku a následně dochází už jen k asynchronní komunikaci na pozadí za účelem dotažení potřebných dat, došlo by v burzovním systému k stažení celé obchodní platformy i při prvním požadavku u nepřihlášených uživatelů.
+	
+	To by mohlo být potenciální bezpečnostní riziko v podobě odhalení struktury aplikace a REST API brokera, v obchodním systému proto udělám kontrolu při, zda je uživatel přihlášený a pokud není, pošle se mu pouze jednoduchá přihlašovací stránka. Přihlášení uživatele pak bude probíhat přes server poskytující obchodní platformu a je zobrazeno na obrázku \ref{fig:client_login}.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=1\textwidth]{images/client_login}
+ 	\caption[Průběh přihlášení uživatele do obchodní platformy]{Průběh uživatelského přihlášení do obchodní platformy.}
+ 	\label{fig:client_login}
+\end{figure}
+	
+	Při prvním přístupu k obchodní platformě se uživatel dostane na přihlašovací stránku, kde zadá email a heslo a odešle ho na webový server obchodní platformy. Ta přepošlě požadavek na klientské API brokera, kde dojde k ověření přihlašovacích údajů, přihlášení a následné vrácení autorizačního klíče. Ten se spolu se \textit{sessionId} nastaví na webserveru obchodní platformy do Redis databáze a spolu se SPA představující obchodní platformu se odešle uživateli do prohlížeče. Následná komunikace obchodní platformy již probíhá přímo s brokerem za použití obdrženého autorizačního klíče.
+	
+	
+\subsection{Rozvržení stránek aplikace}
+	
+	Aplikace bude obsahovat tyto stránky:
+
+\begin{itemize}
+
+\item \textbf{Dashboard} - Základní sekce s přehledem všech akcií, aktuálně držených pozic a zadaných příkazů řekajících k vyřízení.
+
+\item \textbf{Seznam akcií} - Seznam všech akcií s možností zadání nákupního příkazu pro konkrétní akcii.
+
+\item \textbf{Detail akcie} - stránka s detailními údaji o akcii a grafem zobrazující vývoj ceny a zobchodovaného množství dané akcie.
+
+\item \textbf{Moje akcie} - Seznam aktuálně držených akcií a zadaných příkazů s~možností prodeje akcie a zrušení zatím nevyřízeného příkazu.
+
+\item \textbf{Můj účet} - Stránka s možností úpravy uživatelských informací a nastavení nového hesla.
+
+\item \textbf{Historie} - Seznam všech proběhlých transakcí a zadaných příkazů.
+
+\end{itemize}
+
+	Obsah jednotlivých stránek se bude načítat z REST API brokera pomocí AJAX požadavků a přechod mezi nimi zajistí modul \fnurl{\$route}{https://docs.angularjs.org/api/ngRoute/service/\$route} technologie Angular.JS tak, že vznikne jednoduchá single page aplikace.
+	
+\subsection{Realtime Socket.IO API}
+	
+	Kromě HTTP požadavků bude klientská aplikace využívat také komunikaci pomocí technologie Socket.IO a bude napojena na \textit{realtime} API brokera. Výhodou této technologie je možnost posílání zpráv mezi klientem a serverem, aniž by o~ně musel klient nejprve požádat, jak je popsáno v \ref{sec:socket_io}. Pomocí této komunikace budou přenášeny notifikace událostí, které se staly na burze. Příkladem může být vyexpirování nebo zobchodování obchodního příkazu. V takovém případě si broker zjistí, zda je klient, o jehož příkaz se jedná, připojen k Socket.IO API a pokud ano, odešle mu notifikaci.
+
+\section{Služba poskytující historická data}
+
+	Pro realizaci grafů bude potřeba ukládat historická data vývoje ceny a zobchodovaného objemu a proto bude vytvořena služba zaznamenávající stavy jednotlivých akcií.
+	
+\subsection{Příjem aktuálních dat}
+	
+	Pro periodické načítání aktuálních dat ze systému marketu bude použit stejný způsob připojení jako je u brokera a to sice přes Socket.IO API vytvořené marketem a popsané v sekci \ref{sec:market_api}. 
+		
+	Pro potřeby záznamu aktuálních dat bude služba naslouchat na event \texttt{updatedStockList}, který je emitován po každém burzovním cyklu a nese v sobě informace o jednotlivých akciích.
+	
+\subsection{Ukládání dat a zajištění perzistence}
+	
+	Pro zajištění perzistence budou data ukládána do MongoDB databáze do kolekce \texttt{StockHistory}, která bude u každého záznamu obsahovat tyto údaje:
+	
+\begin{itemize}
+
+\item \textbf{\_id (ObjectID)} - Interní id záznamu v MongoDB databázi.
+
+\item \textbf{ticker (String)} - Ticker akcie.
+
+\item \textbf{id (Int32)} - Id akcie vedené na burze.
+
+\item \textbf{price (Double)} - Cena v daný okamžik.
+
+\item \textbf{time (Double)} - Počet milisekund od 1.1.1970 udávající čas vytvoření záznamu.
+
+\item \textbf{volume (Int32)} - Zobchodované množství akcií v daný okamžik.
+
+\end{itemize}
+
+
+\subsection{Cachování agregovaných dat a vytvoření OHLC cen}
+
+	Pro snížení zátěže na databázi se budou záznamy také na serveru agregovat v~nastaveném intervalu a poté ukládat do interní \textit{cache}, odkud se budou načítat při klientském požadavku.
+	
+	Agregace dat bude probíhat tak, že se sečte zobchodovaný objem záznamů spadajících do stejného intervalu, ze všech cen v intervalu se vybere nejnižší (Low) a nejvyšší (High) hodnota a podle času záznamů se vybere otevírací (Open) a zavírací (Close) cena. 
+	
+	Přidání nového záznamu do agregované cache realizované polem bude probíhat pomocí následujícího pseudokódu:
+
+
+\begin{lstlisting}[basicstyle={\tiny\ttfamily}, frame=single] 
+last = cache[cache.length - 1]; // posledni prvek v cache
+if (isInterval(last.time, newItem.time)) {
+
+	// novy zaznam je ve stejnem intervalu jako posledni prvek, a proto se zagreguje
+	last.high 	= Max(newItem.price, last.high);
+	last.low 	= Min(newItem.price, last.low);
+	last.close 	= last.price;
+	last.volume += newItem.volume;
+} else {
+
+	// novy zaznam je z noveho intervalu, a proto se vlozi jako novy prvek 
+	cache.push({
+		volume: newItem.volume,
+		open: 	newItem.price,
+		high: 	newItem.price,
+		low: 	newItem.price,
+		close: 	newItem.price,
+		time: 	newItem.time
+	});
+}
+
+\end{lstlisting}
+
+
+\subsection{Obnovení cache při pádu služby pomocí MapReduce}
+	
+	V případě pádu aplikace dojde k vymazání cache a tím i ke ztrátě agregovaných dat. Služba bude proto při svém startu provádět agregaci a načtení historických záznamů z MongoDB databáze zpět do interní cache pomocí \fnurl{MapReduce}{http://docs.mongodb.org/manual/core/map-reduce/} dotazu popsaného v dokumentaci \cite{MapReduce}, jehož popis je na obrázku \ref{fig:map_reduce}.
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=1\textwidth]{images/map-reduce}
+ 	\caption[Dotaz MapReduce nad MongoDB databází]{Průběh dotazu MapReduce v MongoDB databázi. [dostupný z~\cite{MapReduce}]}
+ 	\label{fig:map_reduce}
+\end{figure}
+
+	Dotaz MapReduce má tyto 3 fáze:
+	
+\begin{enumerate}
+  \item \textbf{Query} - Selekce dat pro další zpracování.
+  \item \textbf{Map} - Připravení dat a jejich rozdělení do skupin podle klíče (na obrázku je klíčem atribut \texttt{cust\_id}).
+  \item \textbf{Reduce} - Redukce dat ve skupinách (na obrázku dochází k sečtení všech \texttt{amount} hodnot jednotlivých položek).
+\end{enumerate}
+	
+	Při agregaci historických dat se budou vybírat pouze záznamy mladší jak nastavená doba, rozdělí se do skupin podle svého tickeru a intervalu a následná redukce sečte zobchodované objemy a vytvoří OHLC ceny pro jednotlivé intervaly. Tím dojde k obnovení cache do podoby před pádem a dále se bude pokračovat v přidávání dalších záznamů, jak bylo popsáno v předchozí sekci.
+	
+\section{Automatický obchodní systém}
+	
+	Pro testování a zvýšení likvidity v burzovním systému bude sloužit jednoduchý robot, nebo také automatický obchodní systém (AOS), který bude připojen k marketu a podle zadané strategie bude odesílat reálné obchodní příkazy. Účelem této služby nebude dosáhnutí zisku, ale půjde spíše o generování provozu pro možnosti zátěžového testování systému.
+	
+	Návrh systému je z velké části stejné jako u služby brokera, a~proto se v~této sekci zaměřím už jen na specifické části, které jsou zde podstatné.
+
+\subsection{Vnitřní cyklus}
+	
+	Po připojení k marketu, stejně jak tomu bylo u brokera nebo služby poskytující historická data, se v nastaveném intervalu bude spouštět algoritmus pro vygenerování poptávajícího obchodních příkazů. V případě, že robot vlastní nějaké akcie, spustí se také nabízející příkaz a vše se odešle marketu.
+	
+\subsection{Obchodovaná strategie}
+
+	Obchodovaná strategie bude velmi jednoduchá a bude fungovat na bázi pseudo náhodnosti realizované v jazyce JavaScript pomocí funkce \texttt{Math.random()}. Při tvorbě poptávajícího příkazu u jedné akcie bude algoritmus procházet těmito fázemi:
+
+\begin{enumerate}
+  \item Náhodné stanovení požadovaného množství. Minimální množství je 0, maximální pak pevná hranice nastavená v konfiguraci.
+
+  \item Náhodné stanovení procentuálního odchýlení od aktuální ceny akcie a~následný výpočet poptávané ceny.
+  
+  \item Odeslání obchodního příkazu marketu.
+\end{enumerate}
+	
+	Pro generování nabídky bude algoritmus fungovat obdobně, přibude zde akorát kontrola, zda je nabízené množství akcií doopravdy vlastněno a zda na nej není již odeslán nabízející příkaz.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\chapter{Realizace}
+\label{chap:realization}
+
+	V této kapitole popíšu stěžejní části systému, které jsem řešil při implementaci jednotlivých služeb v burzovním systému.
+
+\section{Market}
+
+\subsection{Rozvržení marketu}
+
+	Systém marketu obsahuje 5 hlavních tříd zajišťujících hlavní funkčnost výše navržené struktury. Jsou jimi:
+	
+\begin{itemize}
+
+\item \textbf{\texttt{OrderBook}} - Třída zajišťující práci s obchodními příkazy, jejich ukládání, zpracování seznamu obchodů a vytvoření notifikací, expirace a rušení příkazů a další.
+
+\item \textbf{\texttt{Messenger}} - Třída spravující notifikace pro brokery.
+
+\item \textbf{\texttt{MarketCore}} - Jádro marketu, které se stará o počáteční inicializaci a~následné provádění burzovního cyklu popsaného v \ref{sec:cycle}.
+
+\item \textbf{\texttt{MarketApi}} - Třída definující rozhranní pro Socket.IO API využívané připojenými brokery.
+
+\item \textbf{\texttt{WorkerManager}} - Modul zajišťující připojení všech workerů a jejich správu.
+
+\end{itemize}
+
+	Mimo výše zmíněné je zde ještě třída \texttt{StockList} poskytující aktuální seznam všech akcií a \texttt{WebRestApi} která definuje endpointy pro REST API webového rozhranní marketu.
+
+\subsection{Použití databázové vrstvy}
+	
+	Pro přístup k databázi marketu jsem použil modul \fnurl{\textit{node-postgres}}{https://github.com/brianc/node-postgres}, který při použití naváže \textit{pool} spojení s PostgreSQL databází. Při dotazu do databáze se pak použije  to spojení, které je zrovna volné. Mimo to, zmíněný modul umí také parametrizovat SQL dotazy, čímž se zabrání neoprávněnému proniknutí do databáze pomocí \textit{SQL injection}. Příklad zjednodušené podoby použitého kódu pro volání databázové procedury je na následujícím příkladu:
+
+
+\begin{lstlisting}[basicstyle={\tiny\ttfamily}, frame=single] 
+// funkce zajistujici volani SQL dotazu
+DB.ps = function(ps, params, done) {
+		
+	// funkce query ocekava v parametrech bud undefined a nebo array
+	if (typeof params !== "undefined" && Object.prototype.toString.call(params) !== "[object Array]")
+            params = [params];
+
+    self.client.query(ps, params, done);
+};
+
+// vytvori v databazi poptavajici prikaz na zadanou akcii akcii
+DB.ps("SELECT bid($1, $2, $3, $4) as inserted;", [data.broker, data.stockId ,data.amount, data.price], function(err, res) {
+	console.log("Vysledek dotazu: ", res);
+});
+\end{lstlisting}
+	
+	Bližší popis realizace databázové třídy marketu je opět v práci \cite{Fremunt2014}.
+
+\subsection{Spuštění a inicializace marketu}
+
+	Při spuštění systému dochází k inicializaci vnitřních struktur marketu. Načítá se zde asynchronně seznam všech akcií, seznam neodeslaných notifikací, viz \ref{sec:messenger}, seznam registrovaných workerů a~jejich následné připojení do systému a v neposlední řadě pak také spuštění Socket.IO API pro připojení brokerů a webový server spolu s REST API realizující webové rozhranní marketu. Průběh inicializace systému marketu je na následující ukázce:
+
+
+\begin{lstlisting}[basicstyle={\tiny\ttfamily}, frame=single] 
+[18:26:37.509] DB: Pripojuji se k databazi postgres://market:market@localhost:5433/market
+[18:26:37.524] DB: Uspesne pripojeno k DB 
+[18:26:37.524] APP: Spoustim market server. 
+[18:26:37.671] WorkerServer: Nacitam seznam workeru 
+[18:26:37.672] MarketCore: Probiha init jadra marketu 
+[18:26:37.674] OrderBook: Inituji seznam nenotifikovanych zrusenych prikazu 
+[18:26:37.675] StockList: Nacitam seznam akcii z DB 
+[18:26:37.675] OrderBook: Inituji seznam nenotifikovanych expirovanych prikazu 
+[18:26:37.681] OrderBook: Inituji seznam nenotifikovanych provedenych obchodu 
+[18:26:37.681] APP: Spoustim HTTP server na portu 5555 
+[18:26:37.682] APP: Express server byl spusten 
+[18:26:37.687] MarketCore: Inicializace marketu byla dokoncena - spoustim burzovni cyklus 
+\end{lstlisting}
+
+
+\subsection{Burzovní cyklus}
+	
+	O realizaci continuous trading popsaného v \ref{fig:market_phases} se stará metoda \texttt{MarketCore.tick}, která pomocí knihovny async spustí synchronně kritické procesy popsané v \ref{sec:crit_processes} a po jejich ukončení naplánuje další běh cyklu pomocí funkce \texttt{setTimeout}. 
+
+\begin{lstlisting}[basicstyle={\tiny\ttfamily}, frame=single] 
+    Ł\textbf{self.tick}Ł = function() {
+
+        async.series([
+            self.printTickStartMessage,
+
+            Ł\textbf{OrderBook.processCancelOrders}Ł,
+            Ł\textbf{OrderBook.processExpiredOrders}Ł,
+            Ł\textbf{self.processOrders}Ł,
+            Ł\textbf{MarketApi.sendBrokerStockList}Ł,
+            
+            self.printTickStopMessage,
+        ], function(err) {
+            if (err)
+                return self.handleMarketError(err);
+
+            // naplanuje pristi burzovni cyklus
+            Ł\textbf{setTimeout(self.tick, CONFIG.orderMatchingInterval)}Ł;
+        });
+    };
+\end{lstlisting}
+
+	Během jednoho cyklu se nejprve pomocí metody \texttt{OrderBook.processCancelOrders} načtou (procedura \texttt{get\_uncanceled\_orders}) obchodní příkazy, které byly označeny ke zrušení. Ty se postupně zruší pomocí procedury \texttt{cancel\_order(order\_id)} a brokerům se odešlou příslušné notifikace.
+	
+	Poté se obdobně načtou příkazy pro expiraci (\texttt{get\_old\_active\_orders(ttl)}, postupně se zruší pomocí procedury \texttt{expire\_order(id)} a brokerům se odešlou notifikace.
+	
+	Třetí funkcí v burzovním cyklu je \texttt{MarketCore.processOrders}, která si načte seznam akcií a spolu se seznamem aktivních workerů jej předá třídě \texttt{OrderMatching}, jejíž úkolem bude spustit workery pro zpracování jednotlivých akcií pomocí následujícího kódu:
+	
+\begin{lstlisting}
+
+async.mapLimit(Ł\textbf{stockList}Ł, Ł\textbf{workers.length}Ł, Ł\textbf{self.processStock}Ł, done);Ł\\Ł
+\end{lstlisting}
+
+	Funkce \texttt{async.mapLimit} zavolá asynchronně funkci \texttt{processStock} pro zpracování každé akcie ze seznamu \texttt{stockList}. Při zpracování jedné akcie se nejprve vybere první worker ze seznamu aktivních workerů v poli \texttt{workers}, odešle se mu Id akcie pro zpracování a po příjetí odpovědi se výsledek uloží do pole výsledků a worker se vrátí na konec pole \texttt{workers}. Pomocí této práce se seznamem workerů jsem realizoval load balancing pro rozložení zátěže mezi všechny workery. 
+ 
+	V jednu chvíli však bude zpracováváno maximálně tolik akcií, kolik je aktuálně v systému aktivních workerů (\texttt{workers.length}), při vyšším počtu by nevystačili workeři a systém by skončil chybou. Když zpracování jedné akcie doběhne, knihovna async automaticky spustí zpracování další tak, aby byly workeři vždy optimálně využiti.
+	
+	Při dokončení zpracování všech akcií se zavolá callback funkce \texttt{done}, která uloží nové nové ceny akcií a jejich zobchodovaný objem a následně odešle brokerům notifikace o proběhlých obchodech.
+	
+	Poslední zajímavou funkcí v burzovním cyklu je \texttt{MarketApi.sendBrokerStockList}, která odešle připojeným brokerům aktuální informace o akciích. Seznam akcií se tedy odesílá při každém burzovním ticku, aby brokeři mohli svým klientům zobrazit vždy tu nejaktuálnější cenu akcie.
+    
+
+\subsection{Správa workerů}
+
+	V initační fázi aplikace dojde k načtení seznamu workerů z databáze pomocí stored procedury \texttt{get\_strikers()}. Tento seznam obsahuje dvojice \texttt{IP} a \texttt{PORT}, na kterých workeři čekají na spojení. Záznam o svém umístění vkládá každým worker při startu, a market tak nepotřebuje pevnou konfiguraci workerů.
+	
+	Pro dodatečné škálování za běhu lze spustit načtení workerů z databáze i z webového rozhranní aplikace v sekci \texttt{Seznam workerů}.
+		
+			
+\subsubsection{Připojení workerů do systému}
+	
+	Při načtení workerů z databáze si market nové workery přidá do interního seznamu a zkusí se ke každému připojit pomocí TCP/IP socketu. Pokud je připojení úspěšné, přidá workera i do seznamu aktivních workerů. V opačném případě zvýší proměnnou \texttt{connectAttempts} představující počet nepovedených pokusů o spojení a naplánuje další připojení. Pokud připojení selže vícekrát, vyřadí jej market ze seznamu workerů a poté i z databáze.
+	
+	Pokud připojený worker ukončí spojení nebo v socketu dojde k chybě, market jej odstraní ze seznamu aktivních workerů a dále postupuje jako v případě chybného pokusu o připojení (naplánuje \textit{reconnect} a po nastaveném počtu pokusů jej odstraní).
+	
+	Seznam workerů viditelný ve webovém rozhranní v~sekci Seznam workerů je vidět na obrázku \ref{fig:worker_list}.
+	
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=1\textwidth]{images/strikers}
+ 	\caption[Seznam připojených workerů ve webovém rozhranní marketu]{Seznam připojených workerů ve webovém rozhranní marketu.}
+ 	\label{fig:worker_list} 	
+\end{figure}
+	
+
+\subsubsection{Použití workerů a rozložení zátěže}
+	\textbf{TODO} - smazat ? 
+	Jak již bylo řečeno v sekci XYZ, při použití workerů se volá funkce async.mapLimit, která asynchronně zpracovává na burze vedené akcie. Maximálně však zpracovává tolik akcií, kolik je aktivních workerů.
+	
+	Při zpracování jedné akcie se vyjme první prvek z pole aktivních workerů a do naslouchajícího socketu se pošle Id akcie. Při vrácení dat se worker opět vrátí do seznamu aktivních workerů, aby byl připraven pro zpracování dalších akcií. Při vracení se však worker vkládá na konec seznamu, čímž je zajištěno optimální vytížení všech aktivních workerů.
+	
+	
+\subsection{Messenger a komunikace s brokerem}
+\label{sec:messenger}
+	Při expiraci, zrušení a nebo zobchodování obchodního příkazu je přes třídu \texttt{Messenger} odeslána brokerovi notifikace o události. Pokud broker neodpoví do pevně stanovené doby a nebo není připojen, vloží se notifikace do fronty notifikací příslušného brokera a pokud je připojený, odešle se mu po čase znova. Pokud broker připojený není, čeká se na jeho připojení a pak je mu odeslána celá fronta.
+	
+	Pokud broker potvrdí přijetí, je notifikace označena za vyřízenou pomocí procedury \texttt{set\_order\_completion\_notified} nebo v případě, že jde o notifikaci o zobchodovaném příkazu, použije se \texttt{set\_trade\_buyer\_notified} nebo \texttt{set\_trade\_seller\_notified} podle toho, která strana obchodu potvrdila přijetí. Pokud je notifikace ve frontě, odstraní se i odtud.
+	
+	V případě pádu serveru dojde k vymazání fronty notifikací a je tak potřeba ji při následném spuštění obnovit z databáze do stavu před pádem. Z toho důvodu se ve třídě \texttt{OrderBook} při počáteční inicializaci načtou nenotifikované zrušené, expirované a zobchodované obchodní příkazy (pomocí stored procedur \texttt{get\_unnotified\_canceled\_orders}, \texttt{get\_unnotified\_expired\_orders} a \texttt{get\_unnotified\_trades}) a následně se odešlou přes třídu \texttt{Messenger} znova.
+	
+\subsection{Webové rozhranní}
+\label{sec:market_web}
+
+	Pro službu marketu bylo vytvořeno také webové rozhranní, které slouží k~zobrazení aktuálního stavu služby. Obsahuje informace o připojených workerech, brokerech a akciích vedených na burze. Obrázek \ref{fig:market_stock_detail} zobrazuje webové rozhranní spolu s náhledem na detail akcie vedené v marketu.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=1\textwidth]{images/market_stock_detail}
+ 	\caption[Detail akcie ve webovém rozhranní marketu]{Detail akcie ve webovém rozhranní marketu.}
+ 	\label{fig:market_stock_detail} 	
+\end{figure}
+
+\section{Broker}
+	
+\subsection{Databáze}
+
+	Při realizaci databázové vrstvy brokera jsem použil MongoDB databázi ve verzi 2.4.6. Její použití z aplikace zajistil modul \fnurl{\textit{mongoose}}{http://mongoosejs.com/}, který pomocí definované struktury vytvořil databázový objekt pro používané kolekce. Příklad definování kolekce sloužící k uchování uživatelských informací ve službe brokera je na následujícím příkladu:
+	
+	
+\begin{lstlisting}[basicstyle={\tiny\ttfamily}, frame=single] 
+var mongoose = require('mongoose');
+var Schema = mongoose.Schema;
+ 
+var ClientSchema = new Schema({
+   name: String,
+   email: String,
+   salt: String,
+   lastUsedKey: {type: String, default: null},
+   hash: String,
+   password: String,
+   accountBalance: {type: Number, default: 0},
+   updated: {type: Date, default: Date.now},
+   regDate: {type: Date, default: Date.now}
+});
+
+ClientSchema.statics.incBalance = function(userId, amount, cb) {
+   mongoose.model('Client').update({_id: userId}, {$inc: {accountBalance: amount}}, cb);
+};
+
+ClientSchema.statics.decBalance = function(userId, amount, cb) {
+   mongoose.model('Client').update({_id: userId}, {$dec: {accountBalance: amount}}, cb);
+};
+
+module.exports = mongoose.model('Client', ClientSchema);
+\end{lstlisting}
+	
+	
+\subsubsection{Transakce v MongoDB}
+	
+	V databázi MongoDB chybí podpora relací, což je cena za vysoký výkon, který je u této databáze prioritou. V systému brokera a automatických obchodních systémů je však transakční zpracování nutností a tak se tato databáze ukázala jako nedostatečná pro tento typ aplikací. Může se tak stát, že v aplikaci brokera dojde pouze k částečnému zpracování příkazu a není zde tedy dodržen nefunkční požadavek na spolehlivost a perzistenci uvedený v \ref{sec:requirements2}.
+
+	Pro vyřešení tohoto problému by se dala použít databáze \fnurl{TokuMX}{http://www.tokutek.com/tokumx-for-mongodb/}, která je optimalizovaným klonem MongoDB s možností ACID transakcí. V této práci jsem se však touto možností již z časových důvodů nezabýval.
+	
+\subsection{Komunikace s marketem}
+
+	Komunikace s API marketu popsané v \ref{sec:market_api} probíhá pomocí následujícího kódu, který zajistí také reconnect v případě ztráty spojení.
+
+\begin{lstlisting}[basicstyle={\tiny\ttfamily}, frame=single] 
+this.connectToStockServer = function(conf) {
+    var addr = conf.addr + ":" + conf.port;
+    log.message(("Connecting to stock server " + addr).yellow);
+
+    addr = "http://"+addr;
+    socket = SocketIO.connect(
+        addr, {
+            'force new connection': true,
+            'reconnection delay': 100,
+            'reconnection limit': Infinity,
+            'max reconnection attempts': Infinity,
+        }
+    );
+
+    socket.on('updatedStockList', BROKER.updatedStockList);
+    socket.on('orderProcessed', BROKER.orderProcessed);
+    socket.on('orderCancelled', BROKER.orderCancelled);
+    socket.on('orderExpired', BROKER.orderExpired);
+    socket.on('connect', self.onConnected);
+    socket.on('disconnect', self.onDisconnected);
+};
+\end{lstlisting}
+
+\subsection{API pro obchodní platformu}
+
+\subsubsection{REST API}
+\subsubsection{Realtime Socket.IO API}
+
+\section{Obchodní platforma}
+	
+	Při realizaci obchodní platformu pro koncové uživatele jsem využil grafickou šablonu AdminLTE, kterou jsem upravil a vytvořil v ní jednotlivé stránky, jako je například základní dashboard aplikace (zobrazený na obrázku \ref{fig:dasboard}), sekce s vypisem klientových akcií a zadaných příkazů nebo dalších částí, jejichž náhledy jsou v příloze \ref{chap:screens}.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=1\textwidth]{images/dashboard}
+ 	\caption[Dashboard klientské aplikace]{Dashboard klientské aplikace.}
+ 	\label{fig:dasboard} 	
+\end{figure}
+	
+\subsection{Oddělení sekce pro přihlášené uživatele}
+	
+	Pro rozdělení aplikace na sekci pro přihlášené a nepřihlášené uživatele jsem definoval jednotlivé adresy, jejich obslužné funkce a poté middleware funkce \texttt{authOnly} a \texttt{unAuthOnly}, které jsou zavolány před vlastním zpracováním requestu a mají za úkol přesměrovat uživatele na přihlašovací stránku v případě, že není přihlášený nebo opačně do aplikace, pokud uživatel přihlášený je a je v sekci pro nepřihlášené. Toto zajišťuje následující kód:
+	
+\begin{lstlisting}[basicstyle={\tiny\ttfamily}, frame=single] 
+var Login = {
+    authOnly: function (req, res, next){
+        if(!req.isAuthenticated())
+            return res.redirect("/login");
+        next();
+    },
+    unAuthOnly: function (req, res, next){
+        if(req.isAuthenticated())
+            return res.redirect("/");
+        next();
+    }
+}
+
+// sekce pro neprihlasene
+app.get('/login', Login.unAuthOnly, client.login );
+app.get('/registration', Login.unAuthOnly, client.registration );
+app.post('/login', Login.unAuthOnly, client.doLogin );
+
+// sekce pro prihlasene
+app.get('/logout', Login.authOnly, client.logout );
+app.get('/', Login.authOnly, client.index);
+app.get('*', Login.authOnly, client.index );
+
+
+\end{lstlisting}
+
+
+\subsection{Nastavení CORS a autorizačního tokenu pro přístup k API brokera}
+	
+	Protože klientskou aplikaci představuje webová stránka využívající REST API z jiné domény, je potřeba v aplikaci nejprve povolit CORS requesty. Spolu s tím nastavuji také autorizační token \texttt{Authorization} předávaný v HTTP hlavičce requestů při komunikaci s API. Konfigurace requestů v modulu \texttt{\$http}, který je použit pro komunikaci s API vypadá takto:
+
+\begin{lstlisting}[basicstyle={\tiny\ttfamily}, frame=single] 	
+  // Nastaveni autorizacniho tokenu pro pristup k API
+  $httpProvider.defaults.headers.common["Authorization"] = CONF.key;
+
+  // Komunikace je ve formatu JSON
+  $httpProvider.defaults.headers.common["Content-type"] = "application/json";
+
+  // Povoleni CORS requestu
+  $httpProvider.defaults.useXDomain = true;
+  delete $httpProvider.defaults.headers.common['X-Requested-With'];
+
+\end{lstlisting}
+
+Proměnná \texttt{CONF.key} obsahující autorizační token se získá při prvním načtení stránky ze session, kde byla uložena po přihlášení do obchodní platformy, jehož průběh je popsán v \ref{sec:login_process}.
+
+
+\subsection{Spuštění obchodní platformy pod proxy serverem}
+	
+	Obchodní platforma, ale i další služby v systému, se spouští na nastaveném portu, jehož konfigurace je v souboru \texttt{config/public.js}. Pro přístup k aplikaci pomocí doménového byl použit Nginx v roli proxy serveru s touto konfigurací:
+
+\begin{lstlisting}[basicstyle={\tiny\ttfamily}, frame=single] 	
+server {
+	listen   443;
+
+	ssl    on;
+	ssl_certificate    /etc/ssl/your_domain_name.pem; (or bundle.crt)
+	ssl_certificate_key    /etc/ssl/your_domain_name.key;
+
+	server_name client.stare.cz;
+	
+	location / { 
+		proxy_pass  http://localhost:5000;
+		proxy_redirect off; 
+
+		proxy_http_version 1.1;
+		proxy_set_header Upgrade $http_upgrade;
+		proxy_set_header Connection "upgrade";
+
+		proxy_set_header Host $host ; 
+		proxy_set_header X-Real-IP $remote_addr ; 
+		proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for ; 
+		proxy_set_header X-Forwarded-Proto https; 
+   } 
+}
+\end{lstlisting}
+
+	U dalších webových služeb, které byly vytvořeny v této práci, je konfigurace obdobná.
+
+
+\section{Služba poskytující historická data}
+	
+	Pro potřeby zobrazení grafů jsem vytvořil službu, která zaznamenává ceny po každém ticku\footnote{Jeden tick představuje jeden burzovní cyklus.} marketu a ty poté v agregované formě poskytuje klientům přes veřejné REST API.
+	
+\subsection{Příjem aktuálních dat}
+	
+	Služba je napojena na market podobně jako broker, naslouchá však pouze na jeden event \texttt{updatedStockList}, který je emitován marketem a obsahuje v sobě údaje o aktuální ceně a zobchodovaném množství u všech akcií. Příklad těchto dat je na obrázku \ref{fig:stock_list_data}.
+	
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.8\textwidth]{images/stock_snapshot_data}
+ 	\caption[Atuální data akcií na burze]{Marketem emitovaný JSON s aktuálními daty všech akcií.}
+ 	\label{fig:stock_list_data} 	
+\end{figure}
+
+\subsection{Ukládání dat a interní cache}
+
+	Přijatá data jsou uložena do MongoDB databáze, která slouží jako perzistentní vrstva aplikace. Aby nedocházelo k zbytečnému čtení a agregaci dat z databáze při  každém klientském požadavku na historická data, vloží se data také do interní cache, která je realizována polem obsahujícím záznamy agregované po jedné sekundě. Každý záznam obsahuje celkový zobchodovaný objem v daném intervalu a pak čtveřici OHCL cen (open, high, close, low), které jsou popsané v \ref{sec:stock_charts}. 
+	Přidání záznamu do pole probíhá takto:
+
+
+	které jsou pak zobrazeny v podobě svícových grafů, viz obrázek \ref{fig:ohlc_chart}.
+	
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=1\textwidth]{images/chart_service}
+ 	\caption[Grafy vývoje ceny a volume v aplikaci]{Graf v aplikaci pro zobrazení historického vývoje ceny a volume akcie.}
+ 	\label{fig:ohlc_chart} 	
+\end{figure}
+		
+		
+\subsection{Agregace pomocí MapReduce}
+	
+	\textbf{TODO} - pridat ukazku map reduce ? 
+
+\subsection{REST API s podporou CORS}
+	
+	Data služby jsou veřejně poskytovány pomocí REST API. Pro načtení historických dat slouží endpoint \texttt{/api/stock-history/:ticker/}, který má jeden povinný parametr a to sice ticker akcie, pro kterou má vrátit historická data.
+	
+	Aby se zamezilo načítání stejných dat, má ještě nepovinný GET parametr \texttt{?last=}, kterým se dá určit čas, od kterého se mají záznamy vypisovat. Typicka se tak první request volá bez parametru last a další již s nastaveným last na poslední přijatý čas z předchozího requestu.
+	
+	Příklad komunikace s REST API je na následujícím obrázku 	\ref{fig:hist_service_log}.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=1\textwidth]{images/chart_service_request}
+ 	\caption[Komunikace s REST API služby poskytující historická data]{Komunikace s REST API služby poskytující historická data a~formát vrácených dat.}
+ 	\label{fig:hist_service_log} 	
+\end{figure}
+	
+	Protože REST API může běžet na jiné doméně, než cílový klienti, kteří budou data načítat, je potřeba povolit tzv. Cross-origin resource sharing (CORS), pro podporu AJAX dotazů na cizí doménu. Defaultně je totiž přístup ke zdrojům pomocí AJAX requestů cizí doménu z bezpečnostních důvodů zakázán, viz \cite{RFCwoc}
+	
+
+\section{Automatický obchodní systém}
+	
+	Pro potřeby testování a zvýšení likvidity v systému byl vytvořen také jednoduchý automatický obchodní systém (AOS), jehož účelem je generovat nákupní a~prodejní příkazy.
+	
+	Hlavními třídami jsou zde:
+	
+\begin{itemize}
+
+\item \textbf{\texttt{RobotUI}} - Třída zpracovávající obchodní strategii.
+
+\item \textbf{\texttt{MarketClient}} - Třída zajišťující práci s marketem.
+
+\item \textbf{\texttt{RobotApi}} - REST API pro potřeby webového rozhranní.
+
+\end{itemize}
+
+
+\subsection{Konfigurace}
+	
+	Konfigurace robota se provádí v souboru \texttt{config/public.js} a kromě přístupů k marketu a databázi obsahuje i další konfigurační proměnné ovlivňující chování robota, viz následující příklad:
+
+\begin{lstlisting}[basicstyle={\tiny\ttfamily}, frame=single] 	
+robotConf.ui = {
+  interval: 1000,	// intervalu zpracovani v milisekundach
+  delay: 5000,		// zpozdeni prace robota po startu v milisekundach
+  stocks: ["AAPL"],	// zadane spolecnosti, ktere bude robot sledovat
+  buy_limit: 500,	// maximalni pocet akcii poptavanych v jednu chvili
+  price_range: 5,	// maximalni odchylka od aktualni ceny v procentech
+};
+\end{lstlisting}
+
+\subsection{Cyklus robota}
+
+	Zpracování robota probíhá ve třídě \texttt{RobotUI} periodicky jednou za nastavený počet milisekund, což jsem v jazyce JavaScript realizoval pomocí funkce \texttt{setTimeout} a celý kód vypadá takto:
+
+\begin{lstlisting}[basicstyle={\tiny\ttfamily}, frame=single] 	
+function robotProcess() {
+    // pockame, dokud nebudeme pripojeni k marketu
+    if (!serverStatus.get("authenticated") || ROBOT_TURN_ON == false)
+        return setTimeout(robotProcess, ROBOT_PROCESS_INTERVAL);
+
+    // provedeme asynchronne buy a sell zpracovani
+    async.parallel([
+        sellProcess,
+        buyProcess
+    ], function(err, done) {
+        setTimeout(robotProcess, ROBOT_PROCESS_INTERVAL);
+    });
+}
+\end{lstlisting}
+
+	
+\subsection{Obchodní algoritmus}
+\textbf{TODO} - ? pridat kod?
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\chapter{Deployment}
+\label{chap:deploy}
+	V této kapitole se budu zabývat spuštěním jednotlivých služeb. Vývoj aplikace byl z velké části prováděn na operačním systému Linux, a proto i návod na sputštění bude směrován pro toto prostředí. Aplikace psané v technologii Node.JS jsou však multiplatformní, a pro jejich spuštění na jiných operačních systémech by tak neměly být potřeba žádné větší úpravy.
+
+\section{Konfigurace služeb}
+\label{sec:ports}
+
+	Konfigurační soubor \texttt{config/public.js} u každé služby obsahuje nastavení pro \textit{development} a \textit{production} prostředí, jsou zde nastaveny přístupy k databázím a porty, na kterých jsou služby spuštěny. Na těchto portech běží také webové rozhranní jednotlivých služeb. Defaultní nastavení portů pro produkční prostředí jsou:
+
+\begin{itemize}
+
+\item \textbf{\texttt{Klient}}: 5000
+
+\item \textbf{\texttt{Broker}}: 5100
+
+\item \textbf{\texttt{Market}}: 5555
+
+\item \textbf{\texttt{Obchodní roboti}}: 5200 a 5201
+
+\item \textbf{\texttt{Agregační služba}}: 5400
+
+\end{itemize}
+
+	Pro pohodlné spuštění služeb jsem vytvořil několik scriptů, které budou popsány dále. Scripty jsou umístěny ve složce \texttt{tools/} a jejich hlavním úkolem je nahrání databáze, provedení základní konfigurace, spuštění a zastavení služeb v produkčním nebo development prostředí.
+	
+\section{Kompilace a spuštění workerů}
+	
+	Pro spuštění workerů z práce \cite{Fremunt2014} je nejprve potřeba kód workeru v adresáři \texttt{Striker/C++/} zkompilovat příkazem \texttt{make}. Tím se vytvoří spustitelný soubor \texttt{striker}, který očekává tři parametry. Prvním je adresa, na které worker bude naslouchat (využití tohoto parametru má význam především u systémů s více síťovými rozhranními), druhým je port, na kterém služba poběží a třetím je cesta ke konfiguračnímu souboru \texttt{striker.conf}, který je umístěn ve stejné složce jako zdrojové soubory. Kompilace, spolu se spuštěním workeru, je zobrazena na následujícím příkladu (výpis byl na některých místech zestručněn).
+
+\begin{lstlisting}[basicstyle={\tiny\ttfamily}, frame=single] 	
+# kompilace workeru ve slozce Strike/C++/
+$ make
+c++ -Wall  -I/usr/local/include -I/usr/local/pgsql/include -c Striker.cpp
+c++ -Wall  -I/usr/local/include -I/usr/local/pgsql/include -c StrikerConfig.cpp
+c++ -Wall  -I/usr/local/include -I/usr/local/pgsql/include -c TcpServer.cpp
+... 
+c++ -Wall  -o mockmarket MockMarket.cpp
+c++ -Wall  -o decimal TestDecimal.cpp Decimal.o decDouble.o decQuad.o decContext.o 
+
+# spusteni workeru na portu 6001 se zadanou konfiguraci
+$ ./striker 127.0.0.1 6001 striker.conf 
+toBool: true -> 1
+toBool: false -> 0
+...
+DATABASE_PASSWORD = market
+MARKET_ADDRESS = 127.0.0.1
+MARKET_CHECK = 1
+TICK_SIZE = 0.001
+VERBOSE = 0
+Striker listens for Market on IP address = 127.0.0.1, port = 6001
+\end{lstlisting}
+
+	Kompilaci workeru také zajistí vytvořený shell script \texttt{tools/install}, jehož funkcionalita bude rozebrána dále v \ref{sec:dependenci}.
+
+\section{Instalace použitých technologií}
+
+	Pro nasazení burzovního systému jsou potřeba tyto technologiie:
+	
+\begin{itemize}
+
+\item \textbf{Node.JS} verze 0.10.35
+
+\item \textbf{NPM manager} pro instalaci dalších modulů ve verzi 1.4.28
+
+\item \textbf{PostgreSQL} verze 9.2
+
+\item \textbf{MongoDB} verze 2.4.6
+
+\item \textbf{Redis} verze 2.4.16
+
+\end{itemize}
+
+	Instalace těchto technologií pod operačním systémem Debian bude obsahem dalších sekcí. Celý postup byl také zapsán do scriptu \texttt{tools/install\_prerequizities} a lze jej tak použít pro pohodlnou instalaci všech služeb.
+
+
+\subsection{Node.JS a NPM manager}
+	
+	Pro instalaci Node.JS a NPM lze použít tento postup:
+
+\begin{lstlisting}[basicstyle={\tiny\ttfamily}, frame=single]
+# instalace prerekvizit
+sudo apt-get install curl
+
+# pridani repozitare pro instalator apt-get
+sudo curl -sL https://deb.nodesource.com/setup | bash -
+
+# instalace node.js spolu s NPM 
+sudo apt-get install -y nodejs
+\end{lstlisting}
+
+\subsection{MongoDB}
+	
+	Pro instalaci jednotlivých technologií lze použít tento postup:
+
+\begin{lstlisting}[basicstyle={\tiny\ttfamily}, frame=single]
+# pridani klice pro repozitar
+sudo apt-key adv --keyserver keyserver.ubuntu.com --recv 7F0CEB10
+
+# pridani repozitare do apt-sources
+echo 'deb http://downloads-distro.mongodb.org/repo/debian-sysvinit dist 10gen' | sudo tee /etc/apt/sources.list.d/mongodb.list
+
+# stazeni seznamu z apt-sources
+sudo apt-get update
+
+# instalace MongoDB
+sudo apt-get install -y mongodb-org
+\end{lstlisting}
+
+
+\subsection{Redis}	
+	
+	Instalace Redis databáze se udělá pomocí následujícího kódu:
+	
+\begin{lstlisting}[basicstyle={\tiny\ttfamily}, frame=single]
+sudo apt-get update
+sudo apt-get install build-essential
+sudo apt-get install tcl8.5
+wget http://download.redis.io/releases/redis-2.8.9.tar.gz
+tar xzf redis-2.8.9.tar.gz
+cd redis-2.8.9
+make
+make test
+sudo make install
+cd utils
+sudo ./install_server.sh
+\end{lstlisting}
+
+
+\subsection{PostgreSQL}
+
+	PostgreSQL lze nainstalovat jednodušše použitím \textbf{apt-get} manager:
+
+\begin{lstlisting}[basicstyle={\tiny\ttfamily}, frame=single]
+sudo apt-get install postgresql postgresql-client
+\end{lstlisting}
+
+
+\section{Inicializace databází}
+	
+	Služba pro poskytování historických dat, broker a automatický obchodní systém využívají ke svému běhu databázi MongoDB, kde se jednotlivé databáze a kolekce vytvoří při jejich prvnínm použití. Není zde proto potřeba žádné počáteční inicializace.
+	
+	U brokera a obchodní platformy se využívá databáze Redis, jejíž použití také nepotřebuje žádnou počáteční inicializaci.
+	
+	Pro službu marketu je použita databáze PostgreSQL, jejíž schéma navržené v práci \cite{Fremunt2014} je uloženo v souboru \texttt{Strike/Postgres/market.sql}. 
+	
+	Pro nahrání čisté verze databáze marketu a promazání databází ostatních služeb jsem vytvořil script \texttt{tools/init\_database}, který v prvním parametru očekává IP adresu naslouchající PostgreSQL databáze a v druhém pak její port. Inicializace databáze se udělá například takto \texttt{tools/init\_database 127.0.0.1 5432}.
+		
+	Při prvním spuštění služby marketu je potřeba nastavit přístupy jednotlivých služeb, jako je například broker nebo služba zaznamenávající historická data. Vytvořil jsem proto také script \texttt{tools/config\_database}, který očekává stejné parametry, jako v předchozím případě a jeho úkolem je nastavit defaultní přístupové údaje, které mají nastavené i jednotlivé služby ve svých konfiguracích.
+	
+\section{Instalace závislostí}
+\label{sec:dependenci}
+
+	Před spuštěním služeb psaných v technologii Node.JS je potřeba nainstalovat použité moduly. K tomu slouží \texttt{npm} manažer, který podle seznamu závislostí uvedených v souboru \texttt{package.json} stáhne potřebné moduly do složky \texttt{./node\_modules}, odkud jsou pak dále použity aplikací. Pro instalaci závislostí jsem vytvořil shell script \texttt{install} volající \texttt{npm install} na jednotlivých službách, a pro jeho spuštění tak stačí zavolat příkaz \texttt{./tools/install}.
+	
+	Kromě instalace závislostí pro Node.JS aplikace script zajistí také automatickou kompilaci workera a jeho zkopírování spolu s konfiguračním souborem do složky \texttt{tools/}, odkud jej pak využívají scripty pro spuštění rozebrané v následující sekci.
+
+\section{Spuštění Node.JS aplikací}
+
+	Ve složkách jednotlivých služeb je soubor \texttt{app.js}, což je hlavní soubor aplikace a jeho spuštění se provede pomocí příkazu \texttt{node app.js}. To jej spustí s defaultní konfigurací pro development prostředí. Spuštění aplikace v produkčním (a obdobně i jiném) prostředí definovaném v konfiguračním souboru se provede příkazem \texttt{NODE\_ENV=production node app.js}.
+	
+	Pro usnadnění vývoje jsem pro spouštění aplikace použil modul \texttt{nodemon} nainstalovaný pomocí \texttt{sudo npm install nodemon -g}, kde parametr \texttt{-g} zajistí instalaci modulu jako globální služby. Tu pak lze použít příkazem \texttt{nodemon app.js}, což zajistí \textit{livereload} chování při úpravě zdrojového kódu aplikace.
+	
+	V ostrém provozu je potřeba, aby se aplikace při pádu znovu nastartovala, což ani jeden z~výše zmíněných příkazů nezajistí. Pro spuštění služeb v~produkčním prostředí jsem proto použil modul \texttt{forever}, který se opět nainstaluje pomocí příkazu \texttt{sudo npm install forever -g} a~zajistí případný restart služby po jejím pádu. Na obrázku \ref{fig:forever_usage} je zobrazeno spuštění služby spolu se základní funkcionalitou modulu \texttt{forever}. V~obrázu je také vidět, že se při spuštění služby vytvořil log soubor \texttt{/home/cenda/.forever/qmim.log} obsahující výstupy z běžící aplikace.
+	
+	
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=1\textwidth]{images/forever_usage}
+ 	\caption[Spuštění služby v produkčním prostředí a příkaz forever]{Funkcionalita příkazu forever a spuštění jedné služby v produkčním prostředí.}
+ 	\label{fig:forever_usage}
+\end{figure}
+
+	
+	Pro rychlé spuštění všech služeb burzovního systému pomocí příkazu \texttt{forever} a pěti workerů na portech 6001 až 6005 slouží scripty \texttt{tools/start\_development} (pro development prostředí) a \texttt{tools/start\_production} (pro produkční prostře- dí) a celá instalace spolu se spuštění služeb v produkčním prostředí na jednom počítači se udělá pomocí příkazů:
+	
+\begin{lstlisting}[basicstyle={\tiny\ttfamily}, frame=single]
+# smazani databazi a nahrani noveho schematu
+./init_database 127.0.0.1 5432
+# konfigurace pristupovych udaju sluzeb k marketu
+./config_database 127.0.0.1 5432
+# kompilace workeru, instalace zavislosti
+./install
+# spusteni peti workeru a vsech sluzeb v systemu
+./start_production
+\end{lstlisting}	
+	
+	A po jejich provedení by měly být dostupné webová rozhranní služeb na portech uvedených v sekci \ref{sec:ports}.
+	
+\chapter{Monitoring a ladění}
+\label{chap:monitoring}
+
+	V této kapitole popíši možnosti monitoringu a ladění aplikací vytvořených v~technologii Node.JS, které jsem využil při vývoji burzovního systému. Monitorovací služba pak bude použita také v další kapitole \ref{chap:testing} pro účely měření při zátěžovém testování.
+	
+\section{Monitoring Node.JS aplikace}
+	
+	Z monitorovacích nástrojů jsem vybral službu \fnurl{Nodetime}{https://nodetime.com/apps}, která umožňujě měřit výkon aplikace, využití systémových prostředků, počty požadavků na databázi, vytížení Socket.IO spojeních a další metriky, které jsou odesílány na~externí servery služby Nodetime. Tam jsou pak zobrazeny v přehledné podobě pomocí grafů a tabulek.
+	
+	Službu jsem zvolil především pro velké množství měřených metrik a pak také pro její snadné použití v Node.JS aplikacích, jak ukazuje následující měřící kód:
+
+\begin{lstlisting}[basicstyle={\tiny\ttfamily}, frame=single]
+require('nodetime').profile({
+    accountKey: ' - klic prideleny sluzbou nodetime - ', 
+    appName: 'Nazev Aplikace'
+});
+\end{lstlisting}
+  
+\section{Ladění}
+	
+	Pro Node.JS aplikace existuje mnoho nástrojů, kterými lze kód debugovat a~ladit. Ze seznamu v \fnurl{diskuzní vláknu}{http://stackoverflow.com/questions/1911015/how-to-debug-node-js-applications} na webu Stack Overflow jsem pro tyto účely vybral službu \fnurl{node-inspector}{https://github.com/node-inspector/node-inspector}.
+	
+	Před její použitím je potřeba nejprve spustit samotnou aplikaci s příkazem \texttt{node --debug[=port] app.js} nebo \texttt{node --debug-brk[=port] app.js}, který na zadaném portu (defaultně 5858) spustí debuggovací rozhranní a poté spustí samotnou aplikaci. Druhý příkaz pak navíc ještě pozastaví aplikaci hned při startu a její zpracování lze pak krokovat nebo jinak ovládat v debuggeru.
+	
+	Modul node-inspector se nainstaluje pomocí \texttt{npm install node-inspector -g}, kde příkaz \texttt{-g} zajistí instalaci modulu jako služby. Tu pak lze nastartovat příkazem \texttt{node-inspector}. Služba je pak přístupná z webového prohlížeče Google Chrome na adrese \texttt{http://127.0.0.1:8080/debug?port=5858}, kde parametr port říka, kde běží debuggovací rozhranní.
+	
+	Na obrázku \ref{fig:debugger} je zobrazeno rozhranní debuggeru během debuggování aplikace marketu.
+	
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=1\textwidth]{images/node_inspector}
+ 	\caption[Prostředí modulu pro ladění kódu v Node.JS]{Rozhranní pro debuggování kódu v technologii Node.JS.}
+ 	\label{fig:debugger}
+\end{figure}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\chapter{Testování - dodelam v prubehu nedele}
+\label{chap:testing}
+	
+	V této kapitole se zaměřím na testování vytvořeného obchodního systému z pohledu rychlosti a výkonu. Pro tyto účely jsem vytvořil tři testovací scénáře, ve kterých budu zkoumat rychlost zpracování obchodních příkazů v závislosti na jejich množství (průběh zpracování příkazu je popsáno v \ref{sec:order_process}), rychlost komunikace navržené v \ref{sec:market_api} a ještě něco \textbf{TODO}.
+	
+	Pro testování využiji službu nodetime popsanou v sekci \ref{chap:monitoring} a automatické obchodní systémy, které byly vytvořeny spolu s obchodním systémem a poslouží nyní pro generování zátěže v systému.
+	
+	
+\section{Testované prostředí}
+	
+	Služby, u kterých bude probíhat měření, poběží na počítači s touto konfigurací:
+		
+\begin{itemize}
+
+\item \textbf{CPU}: 
+
+\item \textbf{RAM}: 
+
+\item \textbf{Síťová karta}:
+
+\end{itemize}
+	
+	A 		
+\subsection{Testovací scénář}
+
+\subsubsection{Scénář 1 - rychlost zpracování obchodních příkazů v závislosti na jejich množství}
+
+\subsubsection{Scénář 2 - roundtrip spojení marketu s brokerem}
+
+\subsubsection{Scénář 3 - ????}
+
+\subsection{Výsledky měření}
+
+\subsection{Závěr měření a návrhy optimalizace}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\chapter{Škálování}
+\label{chap:tunning}
+
+	Tato kapitola je pojata spíše jako teoretická příručka pro škálování aplikací psaných v technologii Node.JS. Zpracování těchto aplikací probíhá v jednom vlákně a nemusí tak být využito plného potenciálu vícejádrového počítače, na kterém systém běží. V dalším textu se proto budu věnovat způsobům škálování, kterými je delegování náročných úloh na externí thready nebo spuštění celé aplikace pod více vlákny a jejich následná synchronizace. U těchto způsobů škálování popíši jejich konkrétní použití na burzovní aplikaci, která je obsahem této práce.
+	
+\section{Oddělení náročných úloh}
+	
+	Základní metodou optimalizace a škálování systému psaného v technologii Node.JS je oddělení úloh náročných na CPU na externí workery nebo \textit{thready}, jak to ostatně bylo provedeno i v této práci. Pro výpočet zdlouhavých výpočtů, které by jinak blokovaly hlavní vlákno, byl využit externí program psaný v jazyce C++, s kterým systém komunikuje přes TCP/IP protokol. Lze však použít i jinou formu komunikace.
+	
+	Kromě externího programu, Node.JS umožňuje využít i tzv. \textit{WebWorkers} popsaných v~specifikaci \cite{WebWorkers}. Jedná se o API umožňující vytvořit výpočetní vlákna, kterým lze přidělit práci samostatnou práci. Specifikace je zaměřena primárně na prostředí jazyka JavaScript ve webovém prohlížeči, s příchodem Node.JS však lze využít webWorkery i na straně serveru. Konkrétní implementací pro Node.JS je například knihovna \fnurl{\textit{node-webworker-threads}}{https://github.com/audreyt/node-webworker-threads}, která umoňuje vytvořit \textit{pool} pomocných threadů, pod kterými lze spouštět definovanou funkci s libovolným množstvím parametrů. Příklad využití tohoto modulu zobrazuje následující kód:
+
+~\\
+
+\begin{lstlisting}[basicstyle={\tiny\ttfamily}, frame=single] 
+var cpuLen = require('os').cpus().length;
+var Threads = require('webworker-threads');
+var ThreadPools = Threads.createPool(cpuLen);
+
+function threadFunc(a, b){
+	return a + b;
+}
+
+ThreadPools.all.eval(threadFunc);
+ThreadPools.any.eval('threadFunc(1, 2)', function(err, res){
+	console.log(res); // vysledek bude cislo 3
+});
+\end{lstlisting}
+
+	Funkce \texttt{Threads.createPool} vytvoří zadaný počet výpočetních vláken, na kterých se pomocí \texttt{ThreadPools.all.eval} zaregistruje funkce \texttt{threadFunction}. Pomocí \texttt{ThreadPools.any.eval} se registrovaná funkce použije s danými parametry na jednom z volných vláken. Pokud není žádné vlákno zrovna volné, knihovna jej dá do fronty a zpracuje až se některé vlákno uvolní.
+	
+	Použití webworkerů je vhodné, pokud jsou předávané parametry co nejmenší. V případě burzovní aplikace by se jednalo o obsáhlé pole s velkým množstvím obchodních příkazů a je tedy jednodušší, když si externí worker získává obchodní příkazy přímo z databáze, čímž market neztrácí zbytečně čas serializací vstupních parametrů a přeposílání dat, které jej nezajímají.
+	
+	Práce workeru tvoří základní kameny burzovního systému, a proto jsem pro účely této práce využil worker napsaný v jazyce C++ a zkompilovaný přímo do strojového kódu, což přispělo k zvýšení výkonu celého systému.
+	
+
+\section{Cluster modul}
+
+	Další možností škálování je tzv. \textit{forknutí} rodičovského procesu pomocí \fnurl{Cluster modulu}{http://nodejs.org/api/cluster.html}. Spuštěním takové aplikace se tak vytvoří více procesů, které mají přístup ke stejným zdrojům. Typicky to může být aplikace sdílející síťový port, na kterém odchytává a zpracovává klientské požadavky.
+	
+	V burzovním systému by se cluster modul dal použít na všech třech částích systému (klient, broker i market). Na klientovi je jeho použití snadné, protože se nemusí řešit komunikace mezi jednotlivými procesy, jedná se totiž o jednoduchou webovou stránku posílající statický obsah. U brokera a marketu již je ale potřeba určitá úroveň synchronizace. U brokera by se muselo vyřešit zamykání klientského účtu při strhávání financí, aby nešlo překročit možnosti účtu odesláním několika příkazů ve stejnou chvíli. Při návrhu marketu by se zas musela vyřešit otázka, zda rozdělit aplikaci podle zpracovávaných akcií, že by každý proces obsluhoval jen podmnožinu všech akciových titulů a nebo zda rozdělit zpracování podle funkce, že by jeden proces řídil burzovní cyklus, další pak komunikovaly s~brokery apod.
+
+	Z důvodu velké náročnosti na návrh a implementaci jsem tuto možnost škálování v tvořeném systému vynechal a jedná se tak o možné pokračování této práce.
+
+\section{Spuštění více aplikací pod load balancerem}
+	
+	Poslední zde rozebranou technikou škálování je spuštění více aplikací běžících na různých portech (popřípadě různých počítačích a IP adresách) a jejich následné zastřešení pomocí load balanceru. Ten lze realizovat například v technologii Nginx, která pak bude rozhrazovat zátěž na jednotlivé aplikace.
+	
+	V tomto případě je opět potřeba vyřešit otázku rozdělení aplikace popsané v předchozí sekci a pak také vytvoření společného komunikačního rozhranní, které lze realizovat pomocí key-value databáze Redis a Node.JS modulu \fnurl{socket.io-redis}{https://github.com/Automattic/socket.io-redis}, přes který pak mohou jednotlivé aplikace komunikovat.
+	
+	Rozdílem oproti škálovací technice z předchozí sekce je, že se dá tímto způsobem spustit aplikace na více počítačích a jedná se tak o další z možných kroků zvýšení výkonu systému.
+	
+	Nastavení load balanceru v technologii Nginx, jehož konfigurace je popsána v \cite{NginXLoadbalancer}, je ukázáno v následujícím zjednodušeném příkladu:
+	
+\begin{lstlisting}[basicstyle={\tiny\ttfamily}, frame=single]
+http {
+  upstream nodejs_app {
+    // umisteni sluzeb, mezi ktere se bude rozdelovat zatez
+    server 127.0.0.1:61337;
+    server 127.0.0.1:61338;
+    server 127.0.0.1:61339;
+    keepalive 64;
+  }
+
+  server {
+    listen 80;
+
+    server_name nodejs-app.tld;
+
+    location / {
+      proxy_redirect	off;
+      proxy_set_header	X-Real-IP $remote_addr;
+      proxy_set_header	X-Forwarded-For $proxy_add_x_forwarded_for;
+      proxy_set_header	X-Forwarded-Proto $scheme;
+      proxy_set_header	Host $http_host;
+      proxy_set_header	Connection "upgrade";
+      proxy_http_version 1.1;
+
+      // pouziti nastaveneho load balanceru
+      proxy_pass	http://nodejs_app;
+    }
+  }
+}
+\end{lstlisting}
+
+Na příkladu jsou v sekci \texttt{upstream} definovány adresy tří aplikačních serverů běžících na adrese 127.0.0.1 a portech 61337, 61338 a 61339, mezi které se budou rozdělovat přicházející požadavky. Při konfiguraci technologie Nginx lze uvést mnoho dalších nastavení, jejichž použití se pozitivně projeví na výkonu aplikace. Detailnější konfigurace pak je například v \cite{NginXConfigExample}.
+
+	
+\begin{conclusion}
+\label{conclusion}
+
+	V této práci jsem se věnoval burzovním systémům, z nichž jsem se zaměřil především na akciové burzy. V kapitole \ref{chap:motivation} jsem popsal důvod, proč jsem si toto téma vybral a nastínil jsem, co je cílem této práce.
+	
+	V kapitole \ref{chap:analysis} jsem provedl rešerši burzovných systému a popsal jejich základní části spolu s hlavními procesy, které takové systémy obsahují. Kapitola je psána jako jednoduchý úvod do problematiky a neměla by tak dělat problém na pochopení i burzy neznalým čtenářům.
+	
+	Kapitola \ref{chap:design} je již více zaměřena na navrhovaný burzovní systém, jehož vytvoření je cílem této práce. V této kapitole jsem se nejprve věnoval výběru technologií, poté jsem zvolil několik klíčových oblastí návrhu a ty popsal podrobněji.
+	
+	Následující kapitola \ref{chap:realization} obsahuje opět vybrané příklady důležitých částí z~realizace burzovního systému tvořeného v této práci.
+	
+	Při vývoji a pro nasazení systému jsem zvolil některé nástroje, jejichž popis spolu s příklady použití obsahuje kapitola \ref{chap:deploy} a na otázky monitoringu a ladění jsem sepsal jednoduchý úvod do problematiky v kapitole \ref{chap:monitoring}.
+	
+	V kapitole \ref{chap:testing} se věnuji zátěžovému testování klíčových částí burzovního systému, kde jsem vytvořil tři testovací scénáře, na těch jsem systém otestoval a v závěru kapitoly shrnul výsledky měření.
+	
+	Poslední kapitolou \ref{chap:tunning} je návrh na vylepšení systému v podobě ověřených postupů pro škálování systémů postavených na zvolených technologiích. Možno- stí je zde více a v práci jsem nestihl realizovat všechny. Tato kapitola by měla dát proto spíše směr, kterým by se vývoj aplikace měl ubírat v budoucnu a~čtenář by po jejím přečtení měl získat přehled o dalších možnostech, které použité technologie obsahují.
+
+	Práce pro mne byla výzvou, protože obsahovala spoustu nové terminilogie a věcí na pochopení jak z burzovního světa, tak i z technologií, které jsem schválně volil tak, aby pro mne byly nové a já se tak naučil něco nového i~v~tomto směru. Při psaní tohoto závěru proto musím říci, že mne práce posunula v mnoha oblastech. Nejdůležitější však je, že mi dala i rozhled o~možnostech, které v sobě burza ukrývá a spolu s tím i cíl v dalších letech mého života. S ukončením této práce tedy nekončím s tématem burzovních trhů a vydávám se za hlubším poznáním v oblasti investování, krátkodobých obchodů a to nejdůležitější na konec, algoritmického obchodování.
+	
+\end{conclusion}
+
+\bibliographystyle{csn690}
+\bibliography{mybibliographyfile}
+
+\appendix
+
+\chapter{Seznam použitých zkratek}
+% \printglossaries
+\begin{description}
+	\item[AJAX] Asynchronous JavaScript and XML
+	\item[API] Application programming interface
+	\item[JSON] JavaScript Object Notation
+	\item[REST] Representational state transfer
+	\item[CORS] Cross-Origin resource sharing
+	\item[SPA] Single-page application
+	\item[XML] Extensible markup language
+	\item[BSON] Binary JSON
+	\item[CRUD] Create Replace Update Delete operace
+	\item[ETF] Exchange-traded fund
+	\item[CDCP] Centrální depozitář cenných papírů
+	\item[LSE] London Stock Exchange
+	\item[NYSE] The New York Stock Exchange
+	\item[MOC] Market On Close
+	\item[MOO] Market On Open
+	\item[FIX] Financial Information eXchange
+	\item[NASDAQ] National Association of Securities Dealers Automated Quotations
+	\item[RPC] Remote procedure call 
+	\item[DOM] Document Object Model
+	\item[HTML] HyperText Markup Language
+	\item[NPM] Node package manager
+	\item[CSS] Cascading Style Sheets
+	\item[CPU] Central processing unit 
+	\item[HTTP] Hypertext Transfer Protocol
+	\item[I/O] Input/output 
+	\item[OHLC] Open High Low Close
+	\item[ACID] Atomicity, Consistency, Isolation, Durability
+	\item[TCP] Transmission Control Protocol 
+	\item[IP] Internet Protocol
+	\item[RBDMS] Relational database management system
+\end{description}
+
+\chapter{Terminologie a použité pojmy}
+\label{chap:terminology}
+
+\begin{description}
+
+	\item[Akcie] Cenný papír představující podíl ve firmě.
+
+	\item[Backtesting] Testování automatického obchodního systému na. historických datech.
+
+	\item[Broker] Prostředník mezi burzou a klienty, kterým za poplatek dává možnost obchodování na burze.
+
+	\item[Callback funkce] Funkce zavolaná při vyřízení asynchronní operace.
+
+	\item[Cancel order] Obchodní příkaz pro zrušení v minulosti zadaného příkazu.
+
+	\item[Closing price] Uzavírací cena ke konci obchodního dne.
+
+	\item[Continuous trading] Kontinuální obchodování - proces zpracovávající příchozí příkazy do burzovního systému na kontinuální bázi během celé obchodní doby.
+
+	\item[CPU intensive task] Úkol ve zpracování programu, který je náročný na výpočet.
+
+	\item[Emise akcií] Prvotní výpis akcií na burze.
+
+	\item[Event driven architektura] Architektura orientovaná na události, kde při dokončení úloh dojde k vytvoření události a jejímu zpracování obslužnou callback funkcí.
+
+	\item[Event loop] Cyklus v technologii Node.JS který prochází frontu eventů a~zpracovává callback funkce vyřízených asynchronních operací.
+
+	\item[Event] Událost definována svým popisem a callback funkcí.
+
+	\item[Hearthbeat] Příkaz sloužící pro "oživení" spojení.
+
+	\item[I/O non-blocking] Zpracování I/O operací prováděné mimo hlavní thread, takže nedochází k blokaci zpracování v programu.
+
+	\item[I/O operace] Vstupně/Výstupní operace (například čtení a zápis do souboru, komunikace po síti apod.).
+
+	\item[Imbalance] Převis nabídky nad poptávkou nebo naopak.
+
+	\item[Likvidita] Míra obchodovatelnosti na burze .
+
+	\item[Limit order] Obchodní příkaz s pevně nastavenou cenou.
+
+	\item[Load balancer] Nástroj pro rozhazování požadavků mezi více uzlů v~systému.
+
+	\item[Main trading session] Hlavní obchodní fáze během obchodního dne.
+
+	\item[Market] Centrální bod burzovního systému, kde dochází k shromáždění obchodních příkazů od jednotlivých brokerů a jejich následné zobchodování.
+
+	\item[Obchodní kniha] Seznam rozdělený na nabízející a poptávající příkazy a~seřazený podle ceny.
+
+	\item[Obchodní platforma] Klientské rozhranní sloužící pro zadání obchodních příkazů a jejich správu.
+
+	\item[Order matching algoritmus] - Algoritmus pro nalezení strike price a spárování obchodních příkazů.
+
+	\item[Push notifikace] Zpráva poslaná klientovi serverem, aniž by o ni musel klient nejprve požádat.
+
+	\item[Stored procedura] Uživateli definovaná funkce v databázi.
+
+	\item[Strike price] Cena, kde se střetává poptávka s nabídkou.
+
+	\item[Take profit] Typ obchodního příkazu v burzovních systémech.
+
+	\item[Tick size] Granularita ceny - pevně stanovený minimální přírůstek ceny podkladového instrumentu.
+
+	\item[Timeframe] Časový úsek.
+
+	\item[Trailing stop] Typ obchodního příkazu využívaný při obchodování.
+
+	\item[Volatilita] Velikost rozpětí ceny, v které se akcie pohybuje.
+
+	\item[Volume] Zobchodovatelný objem - množství akcií, které lze zobchodovat.
+
+	\item[Worker] V této práci je pojem worker používán pro označení programu navrženého v \cite{Fremunt2014}, který slouží pro zpracování obchodních příkazů.
+
+	\item[XMLHttpRequest] Rozhranní pro tvorba asynchronních HTTP požadavků ve webovém prohlížeči.
+
+\end{description}
+
+
+\chapter{Screeny služeb v systému}
+\label{chap:screens}
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=1\textwidth]{images/screeny/moje_akcie}
+ 	\caption[Výpis uživatelových držených akcií a nevyřízených příkazů]{Výpis uživatelových držených akcií a nevyřízených příkazů v obchodní platformě.}
+ 	\label{fig:debugger}
+\end{figure}
+
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=1\textwidth]{images/screeny/historie}
+ 	\caption[Historie klientových obchodních příkazů v obchodní platformě]{Historie klientových obchodních příkazů v obchodní platformě.}
+ 	\label{fig:debugger}
+\end{figure}
+
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=1\textwidth]{images/screeny/detail_akcie}
+ 	\caption[Detail akcie zobrazený v obchodní platformě]{Detail akcie zobrazený v obchodní platformě}
+ 	\label{fig:debugger}
+\end{figure}
+
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=1\textwidth]{images/screeny/robot_dashboard}
+ 	\caption[Dashboard automatického obchodního systému]{Dashboard automatického obchodního systému.}
+ 	\label{fig:debugger}
+\end{figure}
+
+
+
+\chapter{Obsah přiloženého DVD}
+
+\begin{figure}
+	\dirtree{%
+		.1 readme.txt\DTcomment{stručný popis obsahu DVD}.
+		.1 src.
+		.2 stock\DTcomment{zdrojové kódy implementace}.
+		.3 install.txt\DTcomment{instalační příručka}.
+		.3 Broker\DTcomment{zdrojové kódy brokera}.
+		.3 Client\DTcomment{zdrojové kódy obchodní platformy}.
+		.3 Market\DTcomment{zdrojové kódy marketu}.
+		.3 RobotBroker\DTcomment{zdrojové kódy aut. obchodního systému}.
+		.3 ChartService\DTcomment{zdrojové kódy služby pro agregaci dat}.
+		.3 Strike\DTcomment{dokumentace a zdrojové kódy k práci O. Fremunta \cite{Fremunt2014}}.
+		.3 tools\DTcomment{nástroje na ovládání systému}.
+		.2 thesis\DTcomment{zdrojová forma práce ve formátu \LaTeX{}}.
+		.1 text\DTcomment{text práce}.
+		.2 DP\_Juna\_Jan\_2015.pdf\DTcomment{text práce ve formátu PDF}.
+		.2 DP\_Juna\_Jan\_2015.ps\DTcomment{text práce ve formátu PS}.
+	}
+\end{figure}
+
+\end{document}

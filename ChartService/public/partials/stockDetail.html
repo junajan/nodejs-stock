@@ -1,0 +1,40 @@
+<div>
+	<div ng-if="! loaded">
+		<p>Načítám...</p>
+	</div>
+
+	<div ng-if="loaded">
+		<div ng-if="!successLoad && !info.name">
+			<h2>Chyba!</h2>
+			<p>
+				Zadaná akcie neexistuje..
+				<br />
+				Zpět na <a href="/">homepage</a>.
+			</p>
+		</div>
+
+		<div ng-if="info.name">
+			<div>
+			<a href="/"><span class="glyphicon glyphicon-share-alt"></span> zpět na seznam společností</a>
+			<br />
+			<br />
+			<table class="table table-bordered table-striped table-style" style="max-width: 500px;">
+				<tr>
+					<td>Název:</td>
+					<td>{{ info.name }}</td>
+					<td>Kód:</td>
+					<td >{{ info.ticker }}</td>
+				</tr>
+				<tr>
+					<td>Cena:</td>
+					<td>{{ info.price | currency:"$" }}</td>
+					<td>Změna:</td>
+					<td ng-class="(info.priceChange >= 0) ? 'green' : 'red'">{{ info.priceChange }}%</td>
+				</tr>
+			</table>
+
+			<br />
+		    <chart ticker="info.ticker"></div>
+		</div>
+	</div>
+</div>

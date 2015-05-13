@@ -1,0 +1,47 @@
+<legend>
+    Seznam workerů
+<a class="link text-small fright" ng-click="showOnlyConnected = !showOnlyConnected">
+    <span ng-if="showOnlyConnected">Zobrazit všechny workery</span>
+    <span ng-if="!showOnlyConnected">Zobrazit pouze připojené workery</span>
+</a>
+</legend>
+
+<a class="link" ng-click="refreshWorkers()">
+    <span id="worker-spinner" class="glyphicon glyphicon-refresh"></span>
+    Obnovit seznam workerů
+</a>
+
+
+<table class="table table-striped stockList" style="width: 800px;">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Worker</th>
+            <th>Věk</th>
+            <th>Počet volání</th>
+            <th>Spojení</th>
+            <th>Stav</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr ng-repeat="(index, line) in workers" ng-if="!showOnlyConnected || (showOnlyConnected && line.state == 1)">
+            <td>{{ $index + 1 }}</td>
+            <td>{{ line.address+":"+line.port }}</td>
+            <td title="{{ line.connectedDate | date }}">{{ line.connectedDate | dateDiffFromNow }}</td>
+            <td>{{ line.processedCount | number }}</td>
+            <td>
+                <i class="fa fa-circle" ng-class="(line.state == 1)? 'text-green' : 'text-red'"></i>
+            </td>
+            <td>
+                {{ states[line.state] }}
+                <span ng-if="line.state == 4">({{ line.connectAttempts }})</span>
+            </td>
+        </tr>
+        <tr ng-if="!workers.length && !showOnlyConnected">
+            <td colspan="100%">Zatím zde není žádný worker...</td>
+        </tr>
+        <tr ng-if="!activeWorkersLength && showOnlyConnected">
+            <td colspan="100%">Zatím zde není žádný aktivní worker...</td>
+        </tr>
+    </tbody>
+</table>

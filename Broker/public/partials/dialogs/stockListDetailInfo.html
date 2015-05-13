@@ -1,0 +1,65 @@
+<div class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Seznam vlastněných akcií pro {{ detailInfo.name }}</h3>
+        </div>
+        <div class="modal-body">
+            <div class="box-body">
+                <table id="myStocks_table" class="table table-bordered">
+                    <tbody>
+                        <tr>
+                            <th>#</th>
+                            <th>Jednotka</th>
+                            <th>Nákupní cena (počet)</th>
+                            <th>Výnos</th>
+                            <th>Datum nákupu</th>
+                        </tr>
+                        <tr ng-repeat="(i, item) in detailInfo.data">
+                            <td>{{ $index + 1 }}</td>
+                            <td title="{{ item.name }}">{{ item.ticker }}</td>
+                            <td>{{ item.price | currency:"$" }} ({{ item.amount }}x)</td>
+                            
+				            <td ng-class="(stocks[item.ticker].price - item.price  < 0) ? 'text-red' : 'text-green'">
+
+                                {{ stocks[item.ticker].price * item.amount - item.price * item.amount | currency: "$" }}
+				                {{ ( stocks[item.ticker].price - item.price ) / ( item.price / 100 ) | number:2 }}%
+                            </td>
+                            <td>{{ item.date | date:'yyyy-MM-dd HH:mm:ss' }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <!-- /.box-body -->
+            <h4>Sumarizace</h4>
+            <div class="box-body">
+                <table id="myStocks_table" class="table table-bordered">
+                    <tbody>
+                        <tr>
+                            <th>Aktuální cena</th>
+                            <th>Nákupní cena</th>
+                            <th>Množství</th>
+                            <th>Cena celkem</th>
+                            <th>Výnos</th>
+                        </tr>
+                        <tr>
+                            <td>{{ stocks[detailInfo.ticker].price | currency:"$" }}</td>
+                            <td>{{ detailInfo.price / detailInfo.priceCount | currency:"$" }}</td>
+                            <td>{{ detailInfo.amount }}</td>
+                            <td>{{ detailInfo.price | currency:"$" }}</td>
+                            <td ng-class="(stocks[detailInfo.ticker].price  - detailInfo.price / detailInfo.priceCount < 0) ? 'text-red' : 'text-green'">
+                                {{ (stocks[detailInfo.ticker].price * detailInfo.amount - detailInfo.price) | currency:"$" }}
+				                {{ (stocks[detailInfo.ticker].price - detailInfo.price / detailInfo.priceCount ) / ( detailInfo.price / detailInfo.priceCount / 100 ) | number:2 }}%
+
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <!-- /.box-body -->
+
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-warning" ng-click="close()">Zavřít</button>
+        </div>
+    </div>
+</div>

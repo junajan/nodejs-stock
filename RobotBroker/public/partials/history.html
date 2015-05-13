@@ -1,0 +1,33 @@
+<legend>
+    Historie příkazů
+    <a class="fright link" style="font-size: 12px;position:relative;top:10px;" ng-click="showIds= !showIds">
+            Zobrazit / Skrýt ID příkazů
+    </a>
+</legend>
+
+<table class="table table-striped stockList" style="width: 900px;">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Příkaz</th>
+            <th>Jméno</th>
+            <th>Množství</th>
+            <th>Cena za jednotku</th>
+            <th>Celková cena</th>
+            <th>Datum</th>
+            <th class="text-center" ng-if="showIds">ID</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr ng-repeat="(ind, item) in history">
+            <td>{{ $index + 1 }}</td>
+            <td>{{ types[item.type] }}</td>
+            <td>{{ item.code }}</td>
+            <td>{{ item.amount }}</td>
+            <td>{{ item.price | currency:"$"}}</td>
+            <td>{{ item.amount * item.price |currency:"$"}}</td>
+            <td>{{ item.date | date:'yyyy-MM-dd HH:mm:ss.sss' }}</td>
+            <td ng-if="showIds">{{ item.item_id }}</td>
+        </tr>
+    </tbody>
+</table>

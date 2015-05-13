@@ -1,0 +1,30 @@
+.Dd December 16, 2014
+.Dt MOCKMARKET 1
+.Os
+.Sh NAME
+.Nm mockmarket
+.Nd simulate a market requiring price calculations
+.Sh SYNOPSIS
+.Nm mockmarket
+.Ar addr
+.Ar port
+.Sh DESCRIPTION
+.Nm
+simulates a market that asks a
+.Xr striker 1
+running at
+.Dq addr:port
+to perform an auction.
+This allows for a simple debugging of the running
+.Xr striker .
+.Sh EXAMPLES
+.Dl $ mockmarket 127.0.0.1 1234
+.Sh SEE ALSO
+.Xr market 1 ,
+.Xr striker 1
+.Sh HISTORY
+The
+.Nm
+utility was written in 2014.
+.Sh AUTHORS
+.An Ondrej Fremunt Aq Mt fremuond@fit.cvut.cz

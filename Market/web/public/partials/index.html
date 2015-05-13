@@ -1,0 +1,59 @@
+<br />
+<div ng-if="!info">
+    Načítám...
+</div>
+<div ng-if="info">
+
+    <label><h3>Základní informace a nastavení</h3></label>
+
+    <table class="table_column_bold table table-bordered table-striped">
+        <tr>
+            <td>Port:</td>
+            <td>{{ info.config.port }}</td>
+            <td>Uptime:</td>
+            <td>{{ info.config.startTime | dateDiffFromNow }}</td>
+        </tr>
+        <tr>
+            <td>Order matching interval:</td>
+            <td>{{ info.config.core.orderMatchingInterval }}ms</td>
+            <td>Povolené cenové rozpětí:</td>
+            <td>{{ info.config.core.allowedPriceChange }}%</td>
+        </tr>
+        <tr>
+            <td>Expirace příkazů:</td>
+            <td>{{ info.config.core.expiryTTL }}s</td>
+            <td>Grafová služba:</td>
+            <td>{{ info.config.charts.addr }}:{{ info.config.charts.port }}</td>
+        </tr>
+        <tr>
+            <td>Celkem brokerů:</td>
+            <td>{{ info.brokersCount }}</td>
+            <td>Z toho online:</td>
+            <td>{{ info.online + 1}}</td>
+        </tr>
+        <tr>
+            <td>Databáze:</td>
+            <td>{{info.config.db_url}}</td>
+            <td></td>
+            <td></td>
+        </tr>
+    </table><br />
+
+    <label><h3>Nastavení workerů</h3></label>
+
+    <table class="table_column_bold table table-bordered table-striped">
+        <tr>
+            <td>Počet workerů:</td>
+            <td>{{ info.workers.count }}</td>
+            <td>Z toho online:</td>
+            <td>{{ info.workers.active }}</td>
+        </tr>
+        <tr>
+            <td>Max pokusů o spojení:</td>
+            <td>{{info.config.core.workers.maxConnectAttempts}}</td>
+            <td>Delay mezi pokusy o spojení</td>
+            <td>{{info.config.core.workers.connectAttemptTimeout}}ms</td>
+        </tr>
+    </table>
+
+</div>

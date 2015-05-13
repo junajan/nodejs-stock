@@ -1,0 +1,25 @@
+#!/bin/sh
+DIR=${0%/*}
+BASE="$DIR/../";
+
+if [ $# -eq 2 ]; then
+	
+	echo ">> Removing used databases in MongoDB";
+
+	 mongo broker --eval 'db.dropDatabase();';
+	 mongo broker_robot01 --eval 'db.dropDatabase();';
+	 mongo broker_robot02 --eval 'db.dropDatabase();';
+	 mongo stock_history --eval 'db.dropDatabase();';
+
+	echo ">> Cleaning schema of market DB in PostgreDB";
+	psql -h $1 --port=$2 -U market market < ${BASE}Strike/Postgres/market.sql 
+
+	echo ">> Database init has finished";
+
+else
+    echo ">> Init script ocekava 2 argumenty:";
+    echo ">> 	./init_database PSQL_SERVER_ADDRESS PSQL_SERVER_PORT"
+    echo ">> "
+    echo ">> Priklad:"
+    echo ">> 	./init_database 127.0.0.1 5432"
+fi

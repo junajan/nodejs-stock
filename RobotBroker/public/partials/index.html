@@ -1,0 +1,81 @@
+
+<h3>Základní údaje</h3>
+<div class="detail_info">
+    <table class="table_column_bold table able-condensed table-bordered table-striped">
+        <tbody>
+            <tr>
+                <td class="col-md-2">Název:</td>
+                <td class="col-md-2">{{ data.config.robot_name }}</td>
+                <td class="col-md-2">Port:</td>
+                <td class="col-md-2">{{ data.config.port }}</td>
+            </tr>
+            <tr>
+                <td>Prostředí:</td>
+                <td>{{ data.env }}</td>
+                <td>Stav robota:</td>
+                <td ng-class="(data.robotState) ? 'text-green' : 'text-red'">{{ data.robotState ? "zapnutý" : "vypnutý" }}</td>
+            </tr>
+            <tr>
+                <td>Doba startu:</td>
+                <td>{{ data.startTime | date:'yyyy-MM-dd HH:mm:ss.sss' }}</td>
+                <td>Uptime:</td>
+                <td>{{ data.startTime | dateDiffFromNow }}</td>
+            </tr>
+            <tr>
+            	<td>Množství vlastněných akcií:</td>
+            	<td>{{ data.ownedSum }}</td>
+            	<td>Množství nevyřízených příkazů:</td>
+            	<td>{{ data.pendingCount }}</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<br />
+<h3>Burzovní údaje</h3>
+<div class="detail_info">
+    <table class="table_column_bold table table-bordered table-striped">
+        <tbody>
+            <tr>
+				<td class="span1">Market:</td>
+				<td class="col-md-2">{{ data.config.market.addr }}:{{ data.config.market.port }}</td>
+				<td class="col-md-3">Spojení:</td>
+				<td class="text-{{ data.connected ? 'green' : 'red' }}">{{ data.connected ? 'aktivní' : 'neaktivní' }}</td>
+			</tr>
+			<tr>
+				<td>Broker name:</td>
+				<td>{{ data.config.market_credentials.name }}</td>
+				<td>Secret key:</td>
+				<td class="clickable" ng-click="showSecretKey()">{{ ( data.config.market_credentials.secret ? data.config.market_credentials.secret : "") | truncate:30 }}</td>
+			</tr>
+        </tbody>
+    </table>
+</div>
+
+
+<br />
+<h3>Nastavení robota</h3>
+<div class="detail_info">
+    <table class="table_column_bold table table-bordered table-striped">
+        <tbody>
+            <tr>
+            	<td>Delay startu robota:</td>
+            	<td>{{data.config.ui.delay}}ms</td>
+            	<td>Zpracování v intervalu:</td>
+            	<td>{{data.config.ui.interval}}ms</td>
+            </tr>
+            <tr>
+            	<td>Limit na počet poptávaných akcií:</td>
+            	<td>{{data.config.ui.buy_limit}}ks</td>
+            	<td>Maximální odchýlení ceny:</td>
+            	<td>{{data.config.ui.price_range}}%</td>
+            </tr>
+            <tr>
+            	<td>Sledované akcie:</td>
+            	<td colspan="3">{{data.config.ui.stocks.join(', ')}}</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+

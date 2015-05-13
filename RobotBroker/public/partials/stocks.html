@@ -1,0 +1,42 @@
+<legend>
+    Přehled akcií
+</legend>
+
+<table class="table table table-striped">
+    <thead>
+        <tr>
+            <th style="width: 10px">#</th>
+            <th>Zkratka</th>
+            <th>Jednotka</th>
+            <th>Cena (Změna)</th>
+            <!-- <th>Bid (množství)</th>
+            <th>Ask (množství)</th> -->
+        </tr>
+    </thead>
+    <tbody>
+        <tr ng-repeat="(i, item) in data">
+            <td>{{ $index + 1 }}</td>
+            <td>
+                {{ i }}
+            </td>
+            <td>{{ item.name }}</td>
+            <td>
+                {{ item.price | currency:"$" }}
+                (<span ng-class="(item.priceChange >= 0 ) ? 'text-green' : 'text-red'">
+                    
+                    <span ng-if="item.priceChange != 0">
+                        <i class="fa" ng-class="(item.priceChange > 0 ) ? 'fa-arrow-up' : 'fa-arrow-down'"></i>
+                    </span>
+                    {{ item.priceChange }}%
+                </span>)
+            </td>
+<!--             <td>
+                {{ item.bestSellPrice | currency:"$" }} ({{ item.amountOrdersItemsSell }})
+            </td>
+            <td>
+                {{ item.bestBuyPrice | currency:"$" }} ({{ item.amountOrdersItemsBuy }})
+            </td>
+ -->
+        </tr>
+    </tbody>
+</table>

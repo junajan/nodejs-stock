@@ -1,0 +1,24 @@
+<legend>
+    Seznam aktivních akcií
+</legend>
+
+<table class="table table-striped stockList" style="width: 800px;">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Akcie</th>
+            <th>Vlastněných akcíí</th>
+            <th>Poptávaných akcíí</th>
+            <th>Nabízených akcíí</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr ng-repeat="(code, line) in data">
+            <td>{{ $index + 1 }}</td>
+            <td>{{ code }}</td>
+            <td align="center">{{ line.owned }}</td>
+            <td align="center">{{ line.buy_order }}</td>
+            <td align="center">{{ line.sell_order }}</td>
+        </tr>
+    </tbody>
+</table>

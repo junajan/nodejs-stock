@@ -1,0 +1,20 @@
+<h1>Admin - <%= config.robot_name %></h1>
+
+<ul ng-controller="navCtrl" class="nav nav-tabs" ng-app="link">
+  <li ng-repeat="navLink in navLinks" ng-class="navClass('{{navLink.Title}}')">
+    <a href='/{{navLink.Title}}'>{{navLink.LinkText}}</a>
+  </li>
+  <li style="float: right; cursor: pointer;" ng-if="robotState" class="fright">
+  	<a ng-click="turnRobotState()">Zastavit robota</a>
+  </li>
+  <li style="float: right; cursor: pointer;" ng-if="! robotState" class="fright link">
+  	<a ng-click="turnRobotState()">Spustit robota</a>
+  </li>
+</ul>
+<div class="clear"></div>
+
+<p>
+	<div id="messagesError" class="alert alert-danger" data-ng-show="messageError">{{ messageError }}</div>
+	<div id="messagesValid" class="alert alert-success" data-ng-show="messageValid">{{ messageValid }}</div>
+</p>
+

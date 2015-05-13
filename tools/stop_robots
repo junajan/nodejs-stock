@@ -1,0 +1,5 @@
+#!/bin/sh
+DIR=${0%/*}
+
+echo ">> Zastavuji vsechny roboty"
+pkill -f RobotBroker

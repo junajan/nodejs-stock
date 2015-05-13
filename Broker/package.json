@@ -1,0 +1,42 @@
+{
+  "name": "Stock_viewer",
+  "version": "0.0.1",
+  "description": "Just a test...",
+  "private": true,
+  "main": "app.js",
+  "scripts": {
+    "test": "",
+    "start": "DEBUG=socket.io* nodemon -e 'html,js,ejs,css' app.js"
+  },
+  "dependencies": {
+    "async": "0.7.0",
+    "colors": "0.6.2",
+    "connect-redis": "2.0.0",
+    "connect-session-file": "1.0.4",
+    "debug": "^2.1.0",
+    "ejs": "1.0.0",
+    "ejs-locals": "1.0.2",
+    "express": "3.4.8",
+    "express-ejs-layouts": "0.3.1",
+    "express-form": "0.12.2",
+    "express-session": "1.0.4",
+    "generate-key": "0.0.6",
+    "jade": "1.3.1",
+    "mongoose": "^3.8.19",
+    "passport": "latest",
+    "passport-local": "1.0.0",
+    "redis": "0.10.1",
+    "reload": "0.1.0",
+    "request": "2.34.0",
+    "sha1": "1.1.0",
+    "socket.io": "0.9.16",
+    "socket.io-client": "1.0.5",
+    "underscore": "1.6.0",
+    "validator": "3.9.0"
+  },
+  "devDependencies": {
+    "nodemon": "1.0.17",
+    "reload": "0.1.0"
+  },
+  "author": "jeezaa"
+}

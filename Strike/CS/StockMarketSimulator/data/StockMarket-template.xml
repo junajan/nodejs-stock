@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<data>
+  <orders>
+    <order><id>529320597</id><type>BuyOrder</type><stockId>1</stockId><brokerId>5</brokerId><amount>8000</amount><price>3.18</price><received>2014-08-20T22:48:42.0684+02:00</received></order>
+    <order><id>123584309</id><type>BuyOrder</type><stockId>1</stockId><brokerId>1</brokerId><amount>10000</amount><price>3.21</price><received>2014-08-20T22:48:42.5619+02:00</received></order>
+    <order><id>365298531</id><type>BuyOrder</type><stockId>1</stockId><brokerId>2</brokerId><amount>6000</amount><price>3.21</price><received>2014-08-20T22:48:42.6822+02:00</received></order>
+    <order><id>185625293</id><type>BuyOrder</type><stockId>1</stockId><brokerId>4</brokerId><amount>12000</amount><price>3.19</price><received>2014-08-20T22:48:42.9520+02:00</received></order>
+    <order><id>456315636</id><type>BuyOrder</type><stockId>1</stockId><brokerId>6</brokerId><amount>10000</amount><price>3.17</price><received>2014-08-20T22:48:42.7852+02:00</received></order>
+    <order><id>734628581</id><type>BuyOrder</type><stockId>1</stockId><brokerId>3</brokerId><amount>20000</amount><price>3.20</price><received>2014-08-20T22:48:42.2149+02:00</received></order>
+    <order><id>325298541</id><type>SellOrder</type><stockId>1</stockId><brokerId>13</brokerId><amount>7000</amount><price>3.17</price><received>2014-08-20T22:48:42.6528+02:00</received></order>
+    <order><id>485744841</id><type>SellOrder</type><stockId>1</stockId><brokerId>12</brokerId><amount>15000</amount><price>3.19</price><received>2014-08-20T22:48:42.8420+02:00</received></order>
+    <order><id>585269309</id><type>SellOrder</type><stockId>1</stockId><brokerId>11</brokerId><amount>20000</amount><price>3.20</price><received>2014-08-20T22:48:42.0552+02:00</received></order>
+    <order><id>761241385</id><type>SellOrder</type><stockId>1</stockId><brokerId>14</brokerId><amount>20000</amount><price>3.17</price><received>2014-08-20T22:48:42.3257+02:00</received></order>
+    <order><id>625265305</id><type>SellOrder</type><stockId>1</stockId><brokerId>15</brokerId><amount>8000</amount><price>3.21</price><received>2014-08-20T22:48:42.6587+02:00</received></order>
+    <order><id>111111111</id><type>SellOrder</type><stockId>2</stockId><brokerId>10</brokerId><amount>500000</amount><price>100</price><received>2014-08-20T22:48:42.6588+02:00</received></order>
+    <order><id>684134231</id><type>BuyOrder</type><stockId>1</stockId><brokerId>7</brokerId><amount>15000</amount><price>3.20</price><received>2014-08-20T22:48:42.5678+02:00</received></order>
+    <order><id>684361463</id><type>BuyOrder</type><stockId>1</stockId><brokerId>8</brokerId><amount>10000</amount><price>3.16</price><received>2014-08-20T22:48:42.6851+02:00</received></order>
+    <order><id>952832638</id><type>SellOrder</type><stockId>1</stockId><brokerId>16</brokerId><amount>10000</amount><price>3.22</price><received>2014-08-20T22:48:42.8785+02:00</received></order>
+    <order><id>182182585</id><type>SellOrder</type><stockId>1</stockId><brokerId>17</brokerId><amount>5000</amount><price>3.19</price><received>2014-08-20T22:48:42.0568+02:00</received></order>
+    <order><id>785421050</id><type>SellOrder</type><stockId>1</stockId><brokerId>18</brokerId><amount>12000</amount><price>3.18</price><received>2014-08-20T22:48:42.5544+02:00</received></order>
+    <order><id>625265305</id><type>SellOrder</type><stockId>1</stockId><brokerId>19</brokerId><amount>30000</amount><price>3.23</price><received>2014-08-20T22:48:42.0657+02:00</received></order>
+    <order><id>625265305</id><type>BuyOrder</type><stockId>1</stockId><brokerId>9</brokerId><amount>18000</amount><price>3.16</price><received>2014-08-20T22:48:42.3548+02:00</received></order>
+  </orders>
+  <stocks>
+    <stock><id>1</id><tickSize>0.01</tickSize><price>3.15</price></stock>
+    <stock><id>2</id><tickSize>0.05</tickSize><price>11</price></stock>
+  </stocks>
+  <trades>
+  </trades>
+</data>

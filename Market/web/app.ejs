@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Market admin</title>
+    <meta name="description" content="">
+    <meta name="author" content="jeezaa">
+
+
+    <!-- ===== Bootstrap ====== -->
+    <link rel="stylesheet" href="/vendor/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="/vendor/bootstrap/dist/css/bootstrap-theme.min.css" />
+    <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+
+
+    <!-- ======= Styles ======= -->
+    <link href="/css/style.css" rel="stylesheet" />
+    <base href="/" />
+
+    
+    <script type="text/javascript">
+        var CONF_CHART = <%- JSON.stringify(conf_charts) %>;
+    </script>
+  </head>
+  <body ng-app="fancyApp">
+
+    <div id="appMap">
+        <div>
+          Mapa:
+          <b>Market:</b> <a href="//biblio.stare.cz:5555">biblio.stare.cz:5555</a> 
+          | 
+          <b>Broker:</b> <a href="//biblio.stare.cz:5100">biblio.stare.cz:5100</a> 
+          | 
+          <b>Grafy:</b> <a href="//biblio.stare.cz:5400">biblio.stare.cz:5400</a> 
+          | 
+          <b>Robot01:</b> <a href="//biblio.stare.cz:5200">biblio.stare.cz:5200</a> 
+          | 
+          <b>Robot02:</b> <a href="//biblio.stare.cz:5201">biblio.stare.cz:5201</a>  
+        </div>
+    </div>
+
+    <div class="container">
+      <div id="all">
+        <h1>Stock market admin</h1>
+
+			<ul ng-controller="navCtrl" class="nav nav-tabs" ng-app="link">
+			  <li ng-repeat="navLink in navLinks" ng-class="navClass('{{navLink.Addr}}')">
+			    <a href='/{{navLink.Addr}}'>{{navLink.LinkText}}</a>
+			  </li>
+			</ul>
+
+			<p ng-if="inited">
+				<div id="messagesError" class="alert alert-danger" data-ng-show="messageError">{{ messageError }}</div>
+				<div id="messagesValid" class="alert alert-success" data-ng-show="messageValid">{{ messageValid }}</div>
+			</p>
+
+        <div class="view" ng-view></div>
+      </div>
+    </div>
+
+    <!-- ========= Libs ======= -->
+    <script type="text/javascript" src="/reload/reload.js"></script>
+    <script type="text/javascript" src="/socket.io/socket.io.js"></script>
+    <script src="/vendor/underscore/underscore-min.js"></script>
+    <script src="/vendor/moment/moment.js"></script>
+
+    <!-- ======= jQuery ======= -->
+    <script src="/vendor/jquery/dist/jquery.min.js"></script>
+    <script src="/vendor/highstock/js/highstock.js"></script>
+    <script src="/vendor/highstock/js/modules/exporting.js"></script>
+
+    <!-- ===== Angular.JS ===== -->
+    <script src="/vendor/angular/angular.min.js"></script>
+    <script src="/vendor/angular-route/angular-route.min.js"></script>
+    <script src="/vendor/bootstrap/dist/js/bootstrap.min.js" type="text/javascript"></script>
+    <script src="http://angular-ui.github.io/bootstrap/ui-bootstrap-tpls-0.6.0.js" type="text/javascript"></script>
+
+    <!-- ======= App js ======= -->
+    <script type="text/javascript" src="/js/app.js"></script>
+    <script type="text/javascript" src="/js/ChartDirective.js"></script>
+    <script type="text/javascript" src="/js/services.js"></script>
+    <script type="text/javascript" src="/js/modals.js"></script>
+    <script type="text/javascript" src="/js/controllers.js"></script>
+
+  </body>
+</html>

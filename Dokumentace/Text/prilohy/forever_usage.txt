@@ -1,0 +1,28 @@
+# spustí službu marketu s produkční konfigurací
+$ NODE_ENV=production forever start Market/app.js 
+info:    Forever processing file: Market/app.js
+
+# vypíše běžící služby
+$ forever list
+info:    Forever processes running
+data:        uid  command             script        forever pid   logfile                       uptime      
+data:    [0] qmim /usr/local/bin/node Market/app.js 28031   28036 /home/cenda/.forever/qmim.log 0:0:0:6.997 
+
+# restartuje službu s id 0
+$ forever restart 0
+info:    Forever restarted process(es):
+data:        uid  command             script        forever pid   logfile                       uptime      
+data:    [0] qmim /usr/local/bin/node Market/app.js 28031   28036 /home/cenda/.forever/qmim.log 0:0:0:23.81 
+
+# restartuje všechny běžící služby
+$ forever restartall
+info:    Forever restarted processes:
+data:        uid  command             script        forever pid   logfile                       uptime      
+data:    [0] qmim /usr/local/bin/node Market/app.js 28031   28068 /home/cenda/.forever/qmim.log 0:0:0:8.973 
+
+# zastaví službu s id 0
+$ forever stop 0
+
+# zaství všechny běžící služby
+$ forever stopall
+

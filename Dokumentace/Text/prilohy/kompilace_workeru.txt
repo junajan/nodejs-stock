@@ -1,0 +1,27 @@
+$ make
+c++ -Wall  -I/usr/local/include -I/usr/local/pgsql/include -c Striker.cpp
+c++ -Wall  -I/usr/local/include -I/usr/local/pgsql/include -c TcpServer.cpp
+c++ -Wall  -I/usr/local/include -I/usr/local/pgsql/include -c JsonDataProvider.cpp
+c++ -Wall  -I/usr/local/include -I/usr/local/pgsql/include -c PgsqlDataProvider.cpp
+c++ -Wall  -I/usr/local/include -I/usr/local/pgsql/include -c PriceCalculator.cpp
+PriceCalculator.cpp: In member function ‘void PriceCalculator::insertSellOrders(const OrderList&, PriceCalculationTable&)’:
+PriceCalculator.cpp:93:22: warning: variable ‘beginRowIterator’ set but not used [-Wunused-but-set-variable]
+   ConstTableIterator beginRowIterator = table.begin();
+                      ^
+c++ -Wall  -I/usr/local/include -I/usr/local/pgsql/include -c OrderMatcher.cpp
+c++ -Wall  -I/usr/local/include -I/usr/local/pgsql/include -c PriceCalculationRow.cpp
+c++ -Wall  -I/usr/local/include -I/usr/local/pgsql/include -c Trade.cpp
+c++ -Wall  -I/usr/local/include -I/usr/local/pgsql/include -c Order.cpp
+c++ -Wall  -I/usr/local/include -I/usr/local/pgsql/include -c Stock.cpp
+c++ -Wall  -I/usr/local/include -I/usr/local/pgsql/include -c Decimal.cpp
+c++ -Wall  -I/usr/local/include -I/usr/local/pgsql/include -c decNumber/decDouble.c
+c++ -Wall  -I/usr/local/include -I/usr/local/pgsql/include -c decNumber/decQuad.c
+c++ -Wall  -I/usr/local/include -I/usr/local/pgsql/include -c decNumber/decContext.c
+c++ -Wall  Striker.o TcpServer.o JsonDataProvider.o PgsqlDataProvider.o PriceCalculator.o OrderMatcher.o PriceCalculationRow.o Trade.o Order.o Stock.o Decimal.o decDouble.o decQuad.o decContext.o -o striker -lpqxx -L/usr/local/lib -L/usr/local/pgsql/lib -lpq
+c++ -Wall  -o tcpclient ManualTcpClient.cpp
+c++ -Wall  -o decimal TestDecimal.cpp Decimal.o decDouble.o decQuad.o decContext.o 
+make: *** No rule to make target `striker.1', needed by `all'.  Stop.
+
+
+./striker 127.0.0.1 5001
+./striker 127.0.0.1 5002

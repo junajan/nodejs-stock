@@ -1,0 +1,41 @@
+<legend>
+    Přehled akcií
+</legend>
+
+<table class="table table table-striped">
+    <thead>
+        <tr>
+            <th style="width: 10px">#</th>
+            <th>Zkratka</th>
+            <th>Jednotka</th>
+            <th>Cena (Změna)</th>
+            <th style="width: 40px">Detail</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr ng-repeat="(i, item) in stockItems">
+            <td>{{ $index + 1 }}</td>
+            <td>
+                <a ng-href="/stocks/{{ item.ticker }}">
+                    {{ item.ticker }}
+                </a>
+            </td>
+            <td>{{ item.name }}</td>
+            <td>
+                {{ item.price | currency:"$" }}
+                (<span ng-class="(item.priceChange >= 0 ) ? 'text-green' : 'text-red'">
+                    
+                    <span ng-if="item.priceChange != 0">
+                        <i class="fa" ng-class="(item.priceChange > 0 ) ? 'fa-arrow-up' : 'fa-arrow-down'"></i>
+                    </span>
+                    {{ item.priceChange }}%
+                </span>)
+            </td>
+            <td align="center">
+                <a ng-href="/stocks/{{ item.ticker }}">
+                    <i class="fa fa-bar-chart-o"></i>
+                </a>
+            </td>
+        </tr>
+    </tbody>
+</table>

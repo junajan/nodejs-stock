@@ -1,0 +1,187 @@
+<!-- Content Header (Page header) -->
+<section class="content-header">
+    <h1>
+        Dashboard
+        <small>Control panel</small>
+    </h1>
+</section>
+<section class="content">
+
+    <!-- top row -->
+    <div class="row hidden">
+        <div class="col-xs-12 connectedSortable">
+
+        </div>
+        <!-- /.col -->
+    </div>
+    <!-- /.row -->
+
+    <!-- Main row -->
+    <div class="row">
+        <!-- Left col -->
+        <section class="col-lg-6 connectedSortable">
+
+            <!-- Calendar -->
+            <div class="box box-warning">
+                <div class="box-header">
+                    <i class="fa fa-bar-chart-o"></i>
+                    <div class="box-title">Seznam akcií</div>
+                </div>
+                <!-- /.box-header -->
+                <div class="box-body padding">
+                    <!--The calendar -->
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th style="width: 10px">#</th>
+                                <th>Zkratka</th>
+                                <th>Jednotka</th>
+                                <th>Price</th>
+                                <th style="width: 40px">Detail</th>
+                                <th style="width: 40px">Nákup</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="(i, item) in stockList">
+                                <td>{{ item.id }}</td>
+                                <td>{{ item.ticker }}</td>
+                                <td>{{ item.name }}</td>
+                                <td>
+                                    {{ item.price | currency:"$" }}
+                                    (<span ng-class="{red: item.priceChange < 0, green: item.priceChange >= 0}">{{ item.priceChange }}%</span>)
+                                </td>
+                                <td align="center">
+                                    <a ng-href="/detail/{{ item.ticker }}">
+                                        <i class="fa fa-bar-chart-o"></i>
+                                    </a>
+                                </td>
+                                <td align="center">
+                                    <a href="#" ng-click="buyStock( i )" >
+                                        <i class="fa fa-book "></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr ng-if="!stockListLen">
+                                <td colspan="100%">Seznam akcií se načítá...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="box box-info">
+                <div class="box-header">
+                    <i class="fa fa-rss"></i>
+                    <h3 class="box-title">Zprávy ze světa</h3>
+                </div>
+                <div class="box-body">
+                    <div class="media" ng-repeat="(i, msg) in news">
+                        <div class="media-body">
+                            <a href="{{ msg.link }}" target="_blank">
+                                <h4 class="media-heading">{{ msg.title | cut:true:50:' ...' }}
+                                    <small>&nbsp&nbsp{{ msg.date * 1000 | date:'medium' }}</small>
+                                </h4>
+                            </a>
+                            {{ msg.text | cut:true:100:' ...'}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+        <section class="col-lg-6 connectedSortable">
+            <div class="box box-primary">
+                <div class="box-header">
+                    <i class="fa fa-book"></i>
+                    <h3 class="box-title">Nakoupené akcie</h3>
+                </div>
+                <div class="box-body padding">
+                    <div class="table-responsive">
+                        <table id="myStocks_table" class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Jednotka</th>
+                                    <th>Akt. cena</th>
+                                    <th>Nákupní cena</th>
+                                    <th>Množství</th>
+                                    <th>Celkem $</th>
+                                    <th>Výnos</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="client_stock_list_item" ng-repeat="(i, item) in myStocks">
+                                    <td title="{{ item.name }}">
+                                        <a ng-href="/detail/{{ item.ticker }}">
+                                            {{ item.ticker }}
+                                        </a>
+                                    </td>
+                                    <td>{{ item.actualPrice | currency:"$" }}</td>
+                                    <td>{{ item.price / item.priceCount | currency:"$" }}</td>
+                                    <td>{{ item.amount }}</td>
+                                    <td>{{ item.price / item.priceCount * item.amount | currency: "$" }}</td>
+                                    <td ng-class="(item.actualPrice  - item.price / item.priceCount < 0) ? 'red' : 'green'">
+                                        {{ item.actualPrice * item.amount - item.price / item.priceCount * item.amount | currency:"$" }}
+                                        {{ (item.actualPrice - item.price / item.priceCount ) / (item.price / item.priceCount) * 100  | number:2 }}%
+                                    </td>
+                                    <td>
+                                        <a href="#" ng-click="sellStock( i )" title="Prodat akcie">
+                                            <i class="fa fa-minus-circle"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                <tr ng-if="! myStocksCount">
+                                    <td colspan="100%">V současnosti nevlastníte žádné akcie</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="box box-danger">
+                <div class="box-header">
+                    <i class="fa fa-spinner"></i>
+                    <h3 class="box-title">Nevyřízené příkazy</h3>
+                </div>
+                <div class="box-body padding">
+                    <div class="table-responsive">
+                        <table id="myOrders_table" class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Jednotka</th>
+                                    <th>Typ příkazu</th>
+                                    <th>Cena</th>
+                                    <th>Množství</th>
+                                    <th>Datum podání</th>
+                                    <th>Zrušit</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="(i, item) in pendingOrders">
+                                    <td>{{ $index + 1 }}</td>
+                                    <td title="{{ item.name }}">{{ item.ticker }}</td>
+                                    <td>{{ orderTypes[item.type] }}</td>
+                                    <td>{{ item.price }}$</td>
+                                    <td>{{ item.amount - item.filledAmount }}</td>
+                                    <td>{{ item.date | date:'medium' }}</td>
+                                    <td align="center">
+                                        <a href="#" ng-show="! item.cancelOrder"  ng-click="cancelOrder( item )" title="Zrušit podaný příkaz">
+                                            <i class="fa fa-minus-circle"></i>
+                                        </a>
+                                        <a href="#" class="shadow disabled" ng-show="item.cancelOrder" onClick="alert('Byl odeslán příkaz na zrušení!')" >
+                                            <i class="fa fa-minus-circle "></i>
+                                        </a>
+
+                                    </td>
+                                </tr>
+                                <tr ng-if="! pendingOrders.length">
+                                    <td colspan="100%">Nemáte žádné nevyřízené příkazy</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</section>

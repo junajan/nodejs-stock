@@ -1,0 +1,89 @@
+.Dd December 28, 2014
+.Dt STRIKER 1
+.Os
+.Sh NAME
+.Nm striker
+.Nd calculate auction stock prices and process trades
+.Sh SYNOPSIS
+.Nm striker
+.Ar address
+.Ar port
+.Op Ar config
+.Nm striker
+.Fl a Ar address
+.Fl p Ar port
+.Op Fl c Ar config
+.Sh DESCRIPTION
+.Nm
+calculates auction stock prices on demand.
+It listens on a tcp socket and awaits the
+.Xr market 1
+to send a stock ID. Upon receiving the stock ID,
+.Nm
+goes through all current BUY and SELL orders for the given stock
+and calculates the trade price, the
+.Dq strike
+price. Then it matches the satisfactory orders and processes the 
+resulting trades.
+
+The arguments are as follows: 
+.Bl -tag -width Ds 
+.It address
+Specify the IP address on which 
+.Nm 
+is to listen for TCP/IP connections.
+.It port
+Specify the TCP/IP port on which
+.Nm 
+is to listen for connections.
+.It config
+Specify the configuration file to use.
+.El
+
+.Ss Config File
+By default, the operation of
+.Nm
+is configured by the
+.Pa /etc/striker.conf
+configuration file.
+Optionally, a different configuration file can be given using the
+.Fl c
+option.
+.Pp
+The syntax of the config file is as follows.
+.\" lines of key/val pairs, separated by '=' character.
+.Bl -tag -width Ds 
+.It dbhost\"=127.0.0.1
+Specify the IP address on which PostgreSQL database is to listen for TCP/IP connections.
+.It dbport\"=5432
+Specify the TCP/IP port on which PostgreSQL database is to listen for connections.
+.It dbname\"=postgres
+Specify the name of PostgreSQL database.
+.It dbuser\"=postgres
+Specify the user name.
+.It dbpass\"=postgres
+Specify the password for the database user.
+.It markethost\"=127.0.0.1
+Specify the allowed IP address to connect from. If marketcheck is set to true, connections 
+from other IP addresses will be refused.
+.It marketcheck\"=true
+Specify whether to validate the IP address of incoming connection.
+.It ticksize\"=0.001
+Specify the smallest price unit.
+.It verbose\"=false
+Specify whether to print verbose information.
+.El
+
+.Sh FILES
+.Pa /etc/striker.conf
+.Sh EXAMPLES
+.Dl $ striker -a 127.0.0.1 -p 1234 -c striker.conf
+.Dl $ striker 127.0.0.1 1234
+.Sh SEE ALSO
+.Xr market 1
+.Sh HISTORY
+The
+.Nm
+utility was written in 2014.
+.Sh AUTHORS
+.An Ondrej Fremunt Aq Mt fremuond@fit.cvut.cz

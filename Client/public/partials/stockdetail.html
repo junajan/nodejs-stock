@@ -1,0 +1,66 @@
+<!-- Content Header (Page header) -->
+<section class="content-header">
+    <h1>
+        Detail {{ info.name }} ({{ info.ticker }})
+    </h1>
+    <ol class="breadcrumb">
+        <li><a href="/"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li><a href="/stockinfo"> Seznam akcií</a></li>
+        <li class="active">Detail</li>
+    </ol>
+</section>
+
+<!-- Main content -->
+<section class="content" style="padding-bottom: 0px;">
+
+<div class="detail_info" ng-if="info.ticker">
+    <table class="table table-bordered table-striped" style="max-width: 700px;">
+        <tr>
+            <td>Kód:</td>
+            <td>{{ info.ticker }}</td>
+            <td>Počet akcií na trhu:</td>
+            <td>{{ info.shares | number }}</td>
+        </tr>
+        <tr>
+            <td>Cena:</td>
+            <td>{{ info.price | currency:"$" }}</td>
+            <td>Změna:</td>
+            <td ng-class="(info.priceChange >= 0) ? 'green' : 'red'">{{ info.priceChange }}%</td>
+        </tr>
+<!--         <tr>
+            <td>Bid:</td>
+            <td>{{ info.bestSellPrice | currency:"$" }}</td>
+            <td>Ask:</td>
+            <td>{{ info.bestBuyPrice | currency:"$" }}</td>
+        </tr>
+        <tr>
+            <td>Nabízených akcií:</td>
+            <td>{{ info.amountOrdersItemsSell }}</td>
+            <td>Požadovaných akcií:</td>
+            <td>{{ info.amountOrdersItemsBuy }}</td>
+        </tr> -->
+        <tr>
+            <!-- <td>Celkem držených akcií:</td>
+            <td>{{ info.amountOwned }}</td>
+            <td>Výnos:</td>
+             <td ng-class="(info.price  - item.price / item.priceCount < 0) ? 'red' : 'green'">
+                {{ item.actualPrice * item.amount - item.price / item.priceCount  * item.amount | currency:"$" }}
+                {{ ( item.actualPrice - item.price / item.priceCount)   / ( item.price / 100 ) | number:2 }}%
+            </td> -->
+        </tr>
+    </table>
+</div>
+    
+</section><!-- /.content -->
+
+<section class="content charts_container padding" style="padding-top: 0px;">
+
+    <legend>
+        Graf vývoje ceny
+        <span><a style="font-size: 13px; float: right;" class="link" onclick="$(this).parent().parent().next().fadeToggle();">zobrazit / skrýt</a></span>
+    </legend>
+
+    <div class="charts" ng-if="info.ticker">
+        <chart ticker="info.ticker" height="550"></chart>
+    </div>
+</section>

@@ -1,0 +1,50 @@
+#!/bin/sh
+DIR=$(cd $(dirname $0); pwd -P);
+BASE="$DIR/../";
+WORKER_PATH="$DIR/striker"
+
+echo ">> Spoustim workery"
+#check if worker exists
+if [ -f $WORKER_PATH ];
+then
+	cd $DIR;
+	echo ">> Pro spusteni workeru pouzivam config na adrese: $DIR/striker.conf";
+
+	echo ">> Spoustim workera na adrese 127.0.0.1:6001";
+	nohup ./striker 127.0.0.1 6001 $DIR/striker.conf &
+	echo ">> Spoustim workera na adrese 127.0.0.1:6002";
+	nohup ./striker 127.0.0.1 6002 $DIR/striker.conf &
+	echo ">> Spoustim workera na adrese 127.0.0.1:6003";
+	nohup ./striker 127.0.0.1 6003 $DIR/striker.conf &
+	echo ">> Spoustim workera na adrese 127.0.0.1:6004";
+	nohup ./striker 127.0.0.1 6004 $DIR/striker.conf &
+	echo ">> Spoustim workera na adrese 127.0.0.1:6005";
+	nohup ./striker 127.0.0.1 6005 $DIR/striker.conf &
+else
+   echo ">> Worker neni v souboru $WORKER_PATH byl spravne zkompilovan pomoci ./install ?"
+   exit 1;
+fi
+
+echo ">> Spoustim clienta"
+NODE_ENV=production forever start "${BASE}Client/app.js"
+
+echo ">> Spoustim brokera"
+NODE_ENV=production forever start "${BASE}Broker/app.js"
+
+echo ">> Spoustim market"
+NODE_ENV=production forever start "${BASE}Market/app.js"
+
+echo ">> Spoustim prvniho robota"
+NODE_ENV=production forever start "${BASE}RobotBroker/app.js"
+
+echo ">> Spoustim druheho robota"
+NODE_ENV=production2 forever start "${BASE}RobotBroker/app.js"
+
+echo ">> Spoustim sluzbu poskytujici historicka data"
+NODE_ENV=production forever start "${BASE}ChartService/app.js"
+
+echo ">> Vypis vsech spustenych sluzeb"
+forever list
+
+echo ">> Procesy bezicich workeru"
+ps aux | grep striker

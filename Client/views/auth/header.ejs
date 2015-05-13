@@ -1,0 +1,85 @@
+<!-- header logo: style can be found in header.less -->
+<header class="header">
+    <a href="/" class="logo">
+        <!-- Add the class icon to your logo image or logo icon to add the margining -->
+        Stock Client
+    </a>
+    <!-- Header Navbar: style can be found in header.less -->
+    <nav class="navbar navbar-static-top" role="navigation">
+        <!-- Sidebar toggle button-->
+        <a ng-href="#" class="navbar-btn sidebar-toggle" data-toggle="offcanvas" role="button">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+        </a>
+        <div class="navbar-right">
+            <ul class="nav navbar-nav">
+                <!-- Messages: style can be found in dropdown.less-->
+                <li class="dropdown messages-menu">
+                    <a ng-href="#" class="dropdown-toggle" data-toggle="dropdown">
+                        <i class="fa fa-envelope"></i>
+                        <span ng-show="newMessagesCount && newMessagesCount > 0" class="label label-success">{{ newMessagesCount }}</span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li ng-show="newMessagesCount && newMessagesCount > 0" class="header">Máte {{ newMessagesCount }} nepřečtených zpráv.</li>
+                        <li ng-hide="newMessagesCount && newMessagesCount > 0" class="header">Nemáte žádné nepřečtené zprávy.</li>
+                        <li>
+                            <ul class="menu">
+                                <li class="act" ng-repeat="(i, msg) in newMessages">
+                                    <a ng-href="/history">
+                                        <h4>
+                                            {{ msgTypes[msg.type] | replace:'@@':msg.ticker }}
+                                            <!-- <small><i class="fa fa-clock-o"></i> {{ msg.date | date:'dd.MM. HH:mm:ss' }</small> -->
+                                        </h4>
+                                        <p>Počet: {{ msg.amount }} za: {{ msg.price | currency:"$" }} celkem: {{ ( msg.amount * msg.price ) | currency:"$" }}</p>
+                                    </a>
+                                </li>
+                                
+                            </ul>
+                        </li>
+                        <li class="footer"><a ng-href="/history">Zobrazit celou historii</a></li>
+                    </ul>
+                </li>
+                <!-- User Account: style can be found in dropdown.less -->
+                <li class="dropdown user user-menu">
+                    <a ng-href="#" class="dropdown-toggle" data-toggle="dropdown">
+                        <i class="glyphicon glyphicon-user"></i>
+                        <span class="name_val">{{ userInfo.name }} <i class="caret"></i></span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <!-- User image -->
+                        <li class="user-header bg-light-blue">
+                            <img src="/img/avatar3.png" class="img-circle" alt="User Image" />
+                            <p class="email_val">
+                                {{ userInfo.email }}
+                                <!-- <small></small> -->
+                            </p>
+                        </li>
+                        <!-- Menu Body -->
+                        <li class="user-body">
+                            <div class="col-xs-4 text-center">
+                                <a ng-href="/mystocks">Moje&nbsp;akcie</a>
+                            </div>
+                            <div class="col-xs-4 text-center">
+                                <a ng-href="/history">Historie</a>
+                            </div>
+                            <div class="col-xs-4 text-center">
+                                <a ng-href="/account">Účet</a>
+                            </div>
+                        </li>
+                        <!-- Menu Footer-->
+                        <li class="user-footer">
+                            <div class="pull-left">
+                                <a ng-href="/account" class="btn btn-default btn-flat">Profil</a>
+                            </div>
+                            <div class="pull-right">
+                                <a target="_self" href="/logout" class="btn btn-default btn-flat">Odhlásit se</a>
+                            </div>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </nav>
+</header>
